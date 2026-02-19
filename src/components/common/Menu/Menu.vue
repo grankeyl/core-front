@@ -1,30 +1,25 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useTranslation } from "i18next-vue";
 
 // Icons
-import CasesIcon from "@/assets/icons/case.svg";
-import MarketIcon from "@/assets/icons/market.svg";
-import TicketsIcon from "@/assets/icons/tickets.svg";
-import ProfileIcon from "@/assets/icons/profile.svg";
+import BlocksIcon from "@/assets/icons/blocks.svg?raw";
+import FireIcon from "@/assets/icons/fire.svg?raw";
+import EditIcon from "@/assets/icons/edit.svg?raw";
 
 const route = useRoute();
 const router = useRouter();
 const ActiveMenu = ref('cases');
 
-const { t } = useTranslation();
-
 const menuItems = [
-  { id: 'cases', name: t('menu.cases'), icon: CasesIcon, path: '/' },
-  { id: 'market', name: t('menu.market'), icon: MarketIcon, path: '/market' },
-  { id: 'earn', name: t('menu.earn'), icon: TicketsIcon, path: '/earn' },
-  { id: 'profile', name: t('menu.profile'), icon: ProfileIcon, path: '/profile' },
+  { id: 'home', icon: BlocksIcon, path: '/' },
+  { id: 'burn', icon: FireIcon, path: '/burn' },
+  { id: 'craft-pools', icon: EditIcon, path: '/craft-pools' },
+  { id: 'profile', icon: null, path: '/profile' },
 ];
 
 const CheckDisabledMenu = () => {
-  if (route.path === '/onboard') return true;
-  if (route.path === '/balance/onboard') return true;
+  if (route.path.startsWith('/shared')) return true;
   return false;
 }
 
@@ -42,14 +37,18 @@ const CheckActiveMenu = (menu: any) => {
   <div v-if="!CheckDisabledMenu()" class="menu">
     <div class="items">
       <div 
-        v-for="item in menuItems"
-        :key="item.name"
+        v-for="(item, index) in menuItems"
+        :key="item.id"
         @click="SwitchMenu(item)"
         class="item"
         :class="{ active: CheckActiveMenu(item) }"
       >
-        <img :src="item.icon" alt="icon" />
-        <h4>{{ $t('menu.' + item.id) }}</h4>
+        <template v-if="item.id === 'profile'">
+          <img src="" alt="">
+        </template>
+        <template v-else>
+          <div class="kit-icon" v-html="item.icon"></div>
+        </template>
       </div>
     </div>
   </div>

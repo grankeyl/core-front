@@ -1,122 +1,250 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
-import { useModal } from './../../components/common/Modal';
-import { useCacheStore } from '../../stores/pinia-store';
-import { useRoute } from 'vue-router';
-import { showSuccessToast } from '../../utils/toastManager';
-import { useTranslation } from 'i18next-vue';
+import { ref, computed } from "vue";
+// import { useModal } from "../../components/common/Modal";
 
-import * as APIUser from './../../api/user';
+import Head from "./Components/Head/Head.vue";
+import Split from "./Components/Split/Split.vue";
+import Burns from "./Components/Burns/Burns.vue";
+import DAO from "./Components/DAO/DAO.vue";
+import Portfolio from "./Components/Portfolio/Portfolio.vue";
+import Transactions from "./Components/Transactions/Transactions.vue";
+import Craft from "./Components/Craft/Craft.vue";
+import Controls from "./Components/Controls/Controls.vue";
 
-import User from "./Components/User/User.vue";
-import Actions from "./Components/Actions/Actions.vue";
-import Gifts from "./Components/Gifts/Gifts.vue";
-import WithdrawGiftsModal from './Components/Modals/WithdrawGifts.vue';
-import GiftModal from './Components/Modals/Gift.vue';
-import WithdrawGiftModal from './Components/Modals/WithdrawGift.vue';
+// Icons
+import InfoRawIcon from "@/assets/icons/info.svg?raw";
 
-import Backdrop from "@/assets/images/profile-pg/bg-blured.png";
-import TelegramModule from '../../hooks/useTelegram';
+// Images
+import VotingBgImage from "@/assets/images/profile-pg/voting-bg.png";
 
-const { open } = useModal();
-const { t } = useTranslation();
+// import LaunchVotingModal from "./Components/Modals/LaunchVoting.vue";
+// import DaoRuleModal from "./Components/Modals/DaoRule.vue";
 
-const route = useRoute()
-const useCache = useCacheStore() as any;
+// const { open } = useModal();
 
-const pageRef = ref<HTMLElement|null>(null);
-const inventory = ref<any[]>(Array.from({ length: 9 }, () => ({
-  skeleton: true,
-})));
-const inventoryCount = ref(9);
+// async function openLaunchVotingModal() {
+//   const choose = open(LaunchVotingModal, {});
+//   const dest = await choose.done.catch(() => null);
+//   if (!dest) return;
+// }
 
-async function openWithdrawGifts() {
-  const choose = open(WithdrawGiftsModal);
-  const dest = await choose.done.catch(() => null);
-  if (!dest) return;
-}
+// async function openDaoRuleModal() {
+//   const choose = open(DaoRuleModal, {});
+//   const dest = await choose.done.catch(() => null);
+//   if (!dest) return;
+// }
 
-async function quickSellSuccess(payload: any) {
-  inventory.value.find(i => i.id === payload.id)!.status = "sold";
-}
+// openDaoRuleModal();
 
-async function openGift(payload: any) {
-  const choose = open(GiftModal, {
-    data: payload,
-    onQuickSellSuccess: (p: any) => quickSellSuccess(p),
-    onOpenModalWithdrawGift: () => open(WithdrawGiftModal, {
-      data: payload,
-      onWithdrawGiftSuccess: (p: any) => withdrawGiftSuccess(p),
-    }),
-  });
-  await choose.done.catch(() => null);
-}
+/* ================= DATA ================= */
+const page = ref("split");
+const sectionActive = ref("split");
+const sections = [
+  { id: "split", title: "Split", unread: false },
+  { id: "burns", title: "Burns", unread: false },
+  { id: "dao", title: "DAO", unread: true },
+  { id: "craft", title: "Craft", unread: false },
+  { id: "portfolio", title: "Portfolio", unread: false },
+  { id: "transactions", title: "Transactions", unread: false },
+];
 
-async function withdrawGiftSuccess(payload: any) {
-  TelegramModule.useMediumHaptic();
-  showSuccessToast(t('extra.successGiftWithdrawn'));
-  inventory.value.find(i => i.id === payload.id)!.status = payload.new_status;
-}
+/* ================= CONFIG ================= */
+const MAX_OFFSET = 180; // высота анимации блока
+const scrollRef = ref<HTMLElement | null>(null);
+const scrollTop = ref(0);
+const lastScrollTop = ref(0);
+const scrollDirection = ref<'up' | 'down'>('down');
 
-/* === плавное появление задника === */
-const loaded = ref(false);
-const imgSrc = ref<string | null>(null);
-
-onMounted(async () => {
-  const img = new Image();
-  img.decoding = 'async';
-  img.src = Backdrop;
-  try { /* @ts-ignore */ if (typeof img.decode === 'function') await img.decode(); } catch {}
-  imgSrc.value = Backdrop;
-  loaded.value = true;
+const showInfo = computed(() => {
+  if (page.value === 'split/gift') return false;
+  if (page.value === 'burns/history') return false;
+  if (page.value === 'portfolio/select-gifts') return false;
+  return true;
 });
 
-watch(
-  () => route.params.id,
-  async (id: any) => {
-    if (!id) return
+/* ================= SCROLL ================= */
+function handleScroll() {
+  if (!scrollRef.value) return;
+  const currentScroll = scrollRef.value.scrollTop;
 
-    const res = await APIUser.item(id)
-    if (!res) return
+  // Определяем направление скролла
+  scrollDirection.value = currentScroll > lastScrollTop.value ? 'down' : 'up';
+  lastScrollTop.value = currentScroll;
 
-    openGift({ ...res.item })
-  },
-  { immediate: true }
-)
+  // Всегда обновляем scrollTop до реального значения
+  scrollTop.value = currentScroll;
+}
+
+/* ================= EASING ================= */
+function easeOutCubic(p: number) {
+  return 1 - Math.pow(1 - p, 3);
+}
+
+function easeInOutCubic(p: number) {
+  return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+}
+
+/* ================= PROGRESS ================= */
+const progress = computed(() => Math.min(scrollTop.value / MAX_OFFSET, 1));
+
+/* ================= STYLES ================= */
+const headStyle = computed(() => {
+  const p = progress.value;
+  const easedP = easeOutCubic(p);
+  return {
+    transform: `translateY(${easedP * 16}px) scale(${1 - easedP * 0.04})`,
+    opacity: `${Math.max(1 - easedP * 1.6, 0)}`,
+  };
+});
+
+const blockerStyle = computed(() => {
+  const p = progress.value;
+  const easedP = easeInOutCubic(p);
+  const radius = 20 * (1 - easedP);
+  return {
+    borderRadius: `${radius}px ${radius}px 0 0`,
+    transform: `translateY(${-easedP * 6}px)`,
+  };
+});
+
+const blockerInnerStyle = computed(() => {
+  const p = progress.value;
+  const start = 0.3;
+  let innerP = Math.max((p - start) / (1 - start), 0);
+  innerP = easeOutCubic(innerP);
+  return {
+    opacity: `${1 - innerP * 0.15}`,
+  };
+});
+
+function handleSectionClick(id: string) {
+  sectionActive.value = id;
+}
+
+function handlePageClick(name: string) {
+  page.value = name;
+}
 </script>
 
 <template>
-  <div class="backdrop" :class="{ loaded }">
-    <img v-if="imgSrc" :src="imgSrc" alt="backdrop" />
-  </div>
+  <div
+    ref="scrollRef"
+    class="profile"
+    @scroll="handleScroll"
+  >
+    <div class="bg"></div>
 
-  <div class="pageProfile" ref="pageRef">
-    <User 
-      :photo="useCache.UserData.Photo" 
-      :name="useCache.UserData.Name" 
-    />
+    <div class="head" :style="headStyle">
+      <Head />
+    </div>
 
-    <Actions 
-      v-if="inventoryCount"
-      :inventoryCount="inventoryCount" 
-      @open-modal-withdraw-gifts="openWithdrawGifts" 
-    />
+    <div class="blocker" :style="blockerStyle">
+      <div class="blocker-inner" :style="blockerInnerStyle">
+        <div v-if="showInfo" class="info">
+          <div class="bg">
+            <img :src="VotingBgImage" alt="head-info-bg" />
+          </div>
 
-    <Gifts
-      :inventory="inventory"
-      :inventoryCount="inventoryCount"
-      :scroll-el="pageRef"
-      @open-modal="openGift"
-      @inventory-set="inventory = $event"
-      @inventory-count="inventoryCount = $event"
-    />
+          <div class="content">
+            <div class="left">
+              <div class="kit-icon" v-html="InfoRawIcon"></div>
+              <h4>DAO voting is now open</h4>
+            </div>
+
+            <div class="right">
+              <div class="button">
+                <button>
+                  <h4>Vote</h4>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="showInfo" class="sections">
+          <div
+            v-for="(item, index) in sections"
+            :key="index"
+            class="item"
+            :class="{ active: sectionActive === item.id }"
+            @click="handleSectionClick(item.id)"
+          >
+            <div v-if="item.unread" class="mark"></div>
+            <h4>{{ item.title }}</h4>
+          </div>
+        </div>
+
+        <Split
+          v-if="sectionActive === 'split'"
+          :sections="sections"
+          :sectionActive="sectionActive"
+          @setSection="handleSectionClick"
+
+          :page="page"
+          @setPage="handlePageClick"
+        />
+
+        <Burns
+          v-if="sectionActive === 'burns'"
+          :sections="sections"
+          :sectionActive="sectionActive"
+          @setSection="handleSectionClick"
+
+          :page="page"
+          @setPage="handlePageClick"
+        />
+
+        <DAO
+          v-if="sectionActive === 'dao'"
+          :sections="sections"
+          :sectionActive="sectionActive"
+          @setSection="handleSectionClick"
+
+          :page="page"
+          @setPage="handlePageClick"
+        />
+
+        <Craft
+          v-if="sectionActive === 'craft'"
+          :sections="sections"
+          :sectionActive="sectionActive"
+          @setSection="handleSectionClick"
+
+          :page="page"
+          @setPage="handlePageClick"
+        />
+
+        <Portfolio
+          v-if="sectionActive === 'portfolio'"
+          :sections="sections"
+          :sectionActive="sectionActive"
+          @setSection="handleSectionClick"
+
+          :page="page"
+          @setPage="handlePageClick"
+        />
+
+        <Transactions
+          v-if="sectionActive === 'transactions'"
+          :sections="sections"
+          :sectionActive="sectionActive"
+          @setSection="handleSectionClick"
+
+          :page="page"
+          @setPage="handlePageClick"
+        />
+      </div>
+    </div>
+
+    <div class="controls">
+      <Controls 
+        :page="page"
+        @setPage="handlePageClick"
+      />
+    </div>
+
+    <div class="content"></div>
   </div>
 </template>
 
 <style lang="scss" src="./Profile.scss" scoped></style>
-<style scoped lang="scss">
-.backdrop{
-  opacity:0; transition:opacity .6s ease;
-  &.loaded{ opacity:1; }
-}
-</style>

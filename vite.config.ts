@@ -24,7 +24,7 @@ export default defineConfig({
 
   server: {
     // host: true,
-    port: 2400,
+    port: 6400,
     // hmr: { protocol: 'wss', host: '192.168.0.128', port: 2400 },
   },
 })

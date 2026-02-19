@@ -1,0 +1,127 @@
+.funcs {
+  display: flex;
+  width: calc(100% - var(--padding-left) * 2);
+  max-width: var(--max-width);
+  margin: auto;
+  height: fit-content;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 15px;
+  background: #F8F8FB;
+  box-shadow: 0 -10px 26px rgba(0, 0, 0, 0.171);
+  padding: 8px;
+  position: fixed;
+  bottom: calc(var(--menu-bottom) * 3.2);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  animation: in 0.5s ease-in-out;
+
+  .progress {
+    overflow: visible;
+    height: fit-content;
+  }
+
+  .info {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    justify-content: space-between;
+    display: flex;
+    gap: 12px;
+
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+
+        &.point {
+          h4 {
+            color: #30C15E;
+          }
+        }
+
+        h4 {
+          color: #000;
+          font-size: 14px;
+          font-weight: 600;
+          line-height: normal;
+        }
+        
+        .kit-icon {
+          width: 18px;
+          height: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 0px;
+
+          img {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+    }
+
+    .right {
+      display: inline-flex;
+      height: 28px;
+      padding: 5px 12px 5px 8px;
+      justify-content: center;
+      align-items: center;
+      gap: 2px;
+      border-radius: 24px;
+      background: rgba(255, 27, 84, 0.10);
+
+          :deep(.kit-icon) {
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+
+              path {
+                fill: #FF1B54;
+              }
+            }
+
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+            }
+          }
+
+      h4 {
+        color: #FF1B54;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: normal;
+      }
+    }
+  }
+} 
+
+@keyframes in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) translateX(-50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
+  }
+}

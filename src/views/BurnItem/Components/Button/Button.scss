@@ -1,0 +1,35 @@
+.button {
+  width: 100%;
+  height: 134px;
+  max-width: var(--max-width);
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  z-index: 4;
+  padding: 0 var(--padding-left);
+  background: linear-gradient(0deg, #FFF 50%, rgba(255, 255, 255, 0.00) 100%);
+
+  &.skeleton {
+    opacity: 0.6;
+  }
+
+  button {
+    display: flex;
+    width: 100%;
+    height: 46px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.02);
+    background: #355DFF;
+    margin-top: 44px;
+
+    h4 {
+      width: fit-content;
+      color: #FFF;
+      font-size: 14px;
+      font-weight: 600;
+    }
+  }
+}

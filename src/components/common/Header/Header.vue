@@ -5,7 +5,7 @@ import { useCacheStore } from "../../../stores/pinia-store";
 import { cutNumberNano } from "../../../utils/useTon";
 import { useTranslation } from "i18next-vue";
 
-import * as APIUser from "../../../api/user";
+import * as APIUser from "../../../api/users/users";
 
 // Images
 import Logo from "@/assets/images/logo.svg";

@@ -1,22 +1,11 @@
 import { defineStore } from 'pinia';
+import type { Gift } from '@/types/gifts';
 
 export const useCacheStore = defineStore('cache', {
   state: () => ({
     UserData: { Rank: 0 },
     UserDataMeta: {},
 
-    LiveWinsData: null,
-    CasesData: {},
-    CasesRewardsData: {},
-
-    TasksData: {},
-
-    Market: {
-      Basket: {
-        Items: [],
-        Count: 0,
-        FullyLoaded: false,
-      },
-    }
+    PortfolioSelectedGiftsBurn: [] as Gift[],
   }),
 });

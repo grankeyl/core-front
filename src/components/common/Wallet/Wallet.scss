@@ -1,0 +1,49 @@
+.connect {
+  &.profile {
+    button {
+      display: inline-flex;
+      height: 38px;
+      padding: 10px 14px;
+      align-items: center;
+      gap: 6px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.10);
+
+      img {
+        width: 18px;
+        height: 18px;
+      }
+
+      p {
+        color: #FFF;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: normal;
+      }
+    }
+  }
+      width: fit-content;
+
+      button {
+        display: inline-flex;
+        height: 38px;
+        padding: 8px 14px 8px 12px;
+        align-items: center;
+        gap: 6px;
+        border-radius: 14px;
+        background: rgba(0, 152, 234, 0.10);
+
+        img {
+          width: 18px;
+          height: 18px;
+          object-fit: contain;
+        }
+
+        p {
+          color: #0098EA;
+          text-align: center;
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+}

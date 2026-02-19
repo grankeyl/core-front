@@ -49,6 +49,18 @@ const cleanString = (str: string) => {
   return str.replace(/[^a-zA-Zа-яА-ЯёЁ0-9\s]/g, '');
 }
 
+export function showMenu() {
+  const el = document.querySelector('.menu');
+  if (!el) return;
+  el.classList.remove('hide');
+}
+
+export function hideMenu() {
+  const el = document.querySelector('.menu');
+  if (!el) return;
+  el.classList.add('hide');
+}
+
 export const getImageUrl = (nftKey: string) => {
   if (!nftKey) return '';
   const nftKeyCleaned = nftKey.replace('nft_', 'gift_');

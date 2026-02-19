@@ -1,27 +1,27 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import CasesView from "../views/Cases/Cases.vue";
-import OnboardView from "../views/Onboard/Onboard.vue";
-import MarketView from "../views/Market/Market.vue";
-import EarnView from "../views/Earn/Earn.vue";
+import HomeView from "../views/Home/Home.vue";
+import SharedView from "../views/Shared/Shared.vue";
 import ProfileView from "../views/Profile/Profile.vue";
-import BalanceView from "../views/Balance/Balance.vue";
-import BalanceOnboardView from "../views/Balance/Onboard/Onboard.vue";
-import LeaderboardView from "../views/Leaderboard/Leaderboard.vue";
-import CrashView from "../views/Crash/Crash.vue";
+import BurnView from "../views/Burn/Burn.vue";
+import BurnItemView from "../views/BurnItem/BurnItem.vue";
+import CraftPoolsView from "../views/CraftPools/CraftPools.vue";
+import CraftPoolDetailView from "../views/CraftPoolDetail/CraftPoolDetail.vue";
+import CraftPoolCreateView from "../views/CraftPoolCreate/CraftPoolCreate.vue";
+import MyPoolsView from "../views/MyPools/MyPools.vue";
+import CraftPoolsByGiftView from "../views/CraftPoolsByGift/CraftPoolsByGift.vue";
 
 const routes = [
-  { path: "/", component: CasesView },
-  { path: "/onboard", component: OnboardView },
-  { path: "/market", component: MarketView },
-  { path: "/market/item/:id", component: MarketView },
-  { path: "/earn", component: EarnView },
+  { path: "/", component: HomeView },
+  { path: "/shared/:id", component: SharedView },
   { path: "/profile", component: ProfileView },
-  { path: "/profile/item/:id", component: ProfileView },
-  { path: "/balance", component: BalanceView },
-  { path: "/balance/onboard", component: BalanceOnboardView },
-  { path: "/leaderboard", component: LeaderboardView },
-  { path: "/crash", component: CrashView },
+  { path: "/burn", component: BurnView },
+  { path: "/burn/item/:id", component: BurnItemView },
+  { path: "/craft-pools", component: CraftPoolsView },
+  { path: "/craft-pools/gift/:slug", component: CraftPoolsByGiftView },
+  { path: "/craft-pools/pool/:id", component: CraftPoolDetailView },
+  { path: "/craft-pools/create", component: CraftPoolCreateView },
+  { path: "/craft-pools/my", component: MyPoolsView },
 ];
 
 export default createRouter({

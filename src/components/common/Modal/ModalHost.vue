@@ -40,5 +40,5 @@ onUnmounted(() => lockScroll(false));
 </template>
 
 <style scoped>
-.modal-host { position: fixed; inset: 0; z-index: 1000; }
+.modal-host { position: fixed; inset: 0; z-index: 100001; }
 </style>

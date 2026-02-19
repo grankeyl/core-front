@@ -1,0 +1,118 @@
+.pg {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: in 0.2s ease-in-out;
+}
+
+/* GRID */
+.blocks {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* третий блок на всю ширину */
+.blocks .block:nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+/* CARD */
+.block {
+  position: relative; /* КРИТИЧНО */
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  background: #F8F8FB;
+  overflow: hidden; /* чтобы картинка не улетала визуально */
+  min-height: 80px;
+
+  &.league {
+    .image {
+      right: -70px;
+      bottom: -65px;
+    }
+  }
+}
+
+/* TEXT */
+.context {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 2;
+
+  h4 {
+    color: #000;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  p {
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .flexed {
+    display: flex;
+    align-items: center;
+    gap: 0px;
+
+    .kit-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: -1px;
+      margin-top: 0px;
+
+      :deep(svg) {
+        width: 24px;
+        height: 24px;
+
+        path {
+          fill: #0000004e;
+        }
+      }
+    }
+  }
+}
+
+/* IMAGE */
+.image {
+  position: absolute;
+  right: -80px;
+  bottom: -90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+
+  img {
+    width: 210px;
+    height: auto;
+    object-fit: contain;
+  }
+}
+
+/* ANIMATION */
+@keyframes in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
