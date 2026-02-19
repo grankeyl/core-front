@@ -18,11 +18,6 @@ const pools = ref<CraftPool[]>([]);
 
 const slug = computed(() => route.params.slug as string);
 
-const giftTitle = computed(() => {
-  if (pools.value.length > 0) return pools.value[0].giftInfo?.title || "Unknown";
-  return slug.value;
-});
-
 async function fetchPools() {
   loading.value = true;
   await new Promise((r) => setTimeout(r, 300));

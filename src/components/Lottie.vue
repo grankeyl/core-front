@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, withDefaults, defineProps } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import lottie, { type AnimationItem } from 'lottie-web'
 
 type Renderer = 'svg'|'canvas'|'html'

@@ -1,9 +1,8 @@
-/// <reference types="vite/client" />
+declare module 'buffer' {
+  export const Buffer: typeof globalThis.Buffer;
+}
 
-// Allow importing .vue files in TypeScript
-declare module '*.vue' {
-  import type { DefineComponent } from 'vue';
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
-  const component: DefineComponent<{}, {}, any>;
-  export default component;
+declare module 'process' {
+  const process: NodeJS.Process;
+  export default process;
 }

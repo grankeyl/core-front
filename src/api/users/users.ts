@@ -17,3 +17,12 @@ export async function me(initData: string) {
     return false;
   }
 }
+
+export async function langue(lng: string) {
+  try {
+    const response = await api.post("/users/language", { language: lng });
+    return { ok: response.status === 200 };
+  } catch {
+    return { ok: false };
+  }
+}

@@ -37,7 +37,7 @@ const CheckActiveMenu = (menu: any) => {
   <div v-if="!CheckDisabledMenu()" class="menu">
     <div class="items">
       <div 
-        v-for="(item, index) in menuItems"
+        v-for="item in menuItems"
         :key="item.id"
         @click="SwitchMenu(item)"
         class="item"

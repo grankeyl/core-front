@@ -7,7 +7,6 @@ import { daoApi } from "../../../../../api/dao";
 import ChevroneRightRawIcon from "@/assets/icons/chevrone-right-def.svg?raw"
 import DaoNo from "@/assets/images/profile-pg/dao-no.png";
 
-const skeleton = ref<boolean>(false);
 const items = ref<DAO[]>([]);
 const loading = ref<boolean>(true);
 

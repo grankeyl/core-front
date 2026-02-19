@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import type { FundDetail } from "../../../../types/funds";
 
@@ -14,21 +14,14 @@ const emit = defineEmits<{
   (e: "buy-shares"): void;
 }>();
 
-const isDisabled = computed(() => {
-  return !props.fund.status === 'ACTIVE' || props.fund.purchasedFractionNum >= props.fund.fractionNum;
-});
-
 function handleClick() {
   if (skeleton.value) return;
 
-  if (!props.fund.status === 'ACTIVE') {
-    // Если фонд закрыт, возвращаемся назад
+  if (props.fund.status !== 'ACTIVE') {
     router.push('/');
   } else if (props.fund.purchasedFractionNum >= props.fund.fractionNum) {
-    // Если sold out, тоже возвращаемся назад
     router.push('/');
   } else {
-    // Если активен и есть доступные доли, открываем модалку покупки
     emit('buy-shares');
   }
 }

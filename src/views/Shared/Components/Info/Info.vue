@@ -20,12 +20,12 @@ function formatNumber(num: number): string {
 function calculateProgress(): number {
   if (props.fund.fractionNum === 0) return 0;
   // Если фонд закрыт (не активен) или все доли проданы, показываем полный прогресс
-  if (!props.fund.status === 'ACTIVE' || props.fund.purchasedFractionNum >= props.fund.fractionNum) return 100;
+  if (props.fund.status !== 'ACTIVE' || props.fund.purchasedFractionNum >= props.fund.fractionNum) return 100;
   return Math.min((props.fund.purchasedFractionNum / props.fund.fractionNum) * 100, 100);
 }
 
 function isFundClosed(): boolean {
-  return !props.fund.status === 'ACTIVE' || props.fund.purchasedFractionNum >= props.fund.fractionNum;
+  return props.fund.status !== 'ACTIVE' || props.fund.purchasedFractionNum >= props.fund.fractionNum;
 }
 
 function formatDate(dateString: string): string {

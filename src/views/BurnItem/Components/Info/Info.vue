@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
-import type { AuctionDetail } from "../../../../../types/auctions";
+import { ref, onMounted, onUnmounted } from "vue";
+import type { AuctionDetail } from "@/types/auctions";
 
 // Icons
 import InfoIcon from "@/assets/icons/info.svg?raw";
@@ -59,10 +59,6 @@ function isTimeEnded(): boolean {
   return currentTime.value >= deadlineTime;
 }
 
-const remainingPercentage = computed(() => {
-  const progress = calculateProgress();
-  return Math.round(100 - progress);
-});
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { giftsApi } from "../../../../../../../../api/gifts";
 import type { Gift } from "../../../../../../../../types/gifts";
 import { useCacheStore } from "../../../../../../../../stores/pinia-store";

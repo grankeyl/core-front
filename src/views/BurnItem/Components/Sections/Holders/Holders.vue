@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import type { AuctionDetail } from "../../../../../../types/auctions";
+import type { AuctionDetail } from "@/types/auctions";
 
 const props = defineProps<{
   auction: AuctionDetail;

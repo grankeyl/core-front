@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import CloseIcon from "@/assets/icons/close.svg?raw";
-import DoneIcon from "@/assets/icons/done.svg";
 
 const emit = defineEmits<{
   (e: "close"): void

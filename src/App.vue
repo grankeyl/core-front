@@ -5,16 +5,10 @@ import { onMounted, onBeforeUnmount, nextTick, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCacheStore } from './stores/pinia-store';
 import { waitForFonts } from './utils/useApp';
-import { useTranslation } from 'i18next-vue';
-
 import * as APIUser from './api/users/users';
 
 import Menu from "./components/common/Menu/Menu.vue";
 import TelegramModule from './hooks/useTelegram';
-import Lottie from './components/Lottie.vue';
-import LevelUpView from './components/common/LevelUp/LevelUp.vue';
-
-const { i18next } = useTranslation();
 
 const router = useRouter();
 const loading = ref(true);

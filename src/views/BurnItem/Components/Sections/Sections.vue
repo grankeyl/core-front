@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import type { AuctionDetail } from "../../../../../types/auctions";
+import type { AuctionDetail } from "@/types/auctions";
 
 // Components
 import Holders from "./Holders/Holders.vue";

@@ -47,10 +47,6 @@ function calculateProgress(fund: Fund): number {
   return Math.min(progress, 100);
 }
 
-function formatNumber(num: number): string {
-  return new Intl.NumberFormat('en-US').format(num);
-}
-
 function calculateTimeRemaining(deadline: string): string {
   const deadlineTime = new Date(deadline).getTime();
   const diff = deadlineTime - currentTime.value;
