@@ -149,9 +149,37 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Loading -->
-    <div v-if="loading" class="loader-wrap">
-      <div class="loader"></div>
+    <!-- Skeleton -->
+    <div v-if="loading" class="pool-list">
+      <div v-for="i in 3" :key="i" class="pool-card sk-card">
+        <div class="card-head">
+          <div class="gift-img sk-load"></div>
+          <div class="gift-ctx">
+            <div class="sk-load" style="height:14px; width:65%; border-radius:6px"></div>
+            <div class="sk-load" style="height:12px; width:35%; border-radius:6px; margin-top:6px"></div>
+          </div>
+          <div class="sk-load" style="height:24px; width:60px; border-radius:12px; flex-shrink:0"></div>
+        </div>
+        <div class="card-stats">
+          <div class="stat">
+            <div class="sk-load" style="height:10px; width:80%; border-radius:5px"></div>
+            <div class="sk-load" style="height:16px; width:60%; border-radius:5px; margin-top:5px"></div>
+          </div>
+          <div class="divider"></div>
+          <div class="stat">
+            <div class="sk-load" style="height:10px; width:80%; border-radius:5px"></div>
+            <div class="sk-load" style="height:16px; width:40%; border-radius:5px; margin-top:5px"></div>
+          </div>
+        </div>
+        <div class="card-progress">
+          <div class="sk-load" style="height:8px; width:100%; border-radius:8px"></div>
+          <div style="display:flex; justify-content:space-between; margin-top:6px">
+            <div class="sk-load" style="height:10px; width:40%; border-radius:5px"></div>
+            <div class="sk-load" style="height:10px; width:25%; border-radius:5px"></div>
+          </div>
+        </div>
+        <div class="card-footer sk-load" style="height:35px; border-radius:0 0 16px 16px"></div>
+      </div>
     </div>
 
     <!-- Empty -->

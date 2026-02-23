@@ -4,9 +4,12 @@
   width: 100%;
   gap: 16px;
 
-  &.skeleton {
-    .card, .list-item {
-      opacity: 0.5;
+  .sk-card {
+    pointer-events: none;
+    cursor: default;
+
+    .card-image {
+      &.sk-load { border-radius: 16px; }
     }
   }
 

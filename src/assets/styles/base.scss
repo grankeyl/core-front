@@ -280,3 +280,19 @@ button {
     font-weight: 500;
   }
 }
+
+/* ── Skeleton shimmer ── */
+.sk-load {
+  background: linear-gradient(90deg, #EFEFEF 25%, #e2e2e2 50%, #EFEFEF 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.4s infinite;
+  border-radius: 8px;
+  color: transparent !important;
+  pointer-events: none;
+  user-select: none;
+}
+
+@keyframes sk-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

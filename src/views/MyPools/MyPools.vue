@@ -131,8 +131,33 @@ onMounted(() => {
       </div>
     </div>
 
-    <div v-if="loading" class="loader-wrap">
-      <div class="loader"></div>
+    <div v-if="loading" class="pool-list">
+      <div v-for="i in 3" :key="i" class="pool-card sk-card">
+        <div class="inner">
+          <div class="card-head">
+            <div class="image sk-load"></div>
+            <div class="context">
+              <div class="sk-load" style="height:14px; width:60%; border-radius:6px"></div>
+              <div class="sk-load" style="height:12px; width:35%; border-radius:6px; margin-top:6px"></div>
+            </div>
+            <div class="sk-load" style="height:24px; width:70px; border-radius:12px; flex-shrink:0"></div>
+          </div>
+          <div class="stats">
+            <div v-for="j in 3" :key="j" class="stat">
+              <div class="sk-load" style="height:10px; width:70%; border-radius:5px"></div>
+              <div class="sk-load" style="height:16px; width:50%; border-radius:5px; margin-top:5px"></div>
+            </div>
+          </div>
+          <div class="progress">
+            <div class="sk-load" style="height:8px; width:100%; border-radius:8px"></div>
+            <div style="display:flex; justify-content:space-between; margin-top:6px">
+              <div class="sk-load" style="height:10px; width:40%; border-radius:5px"></div>
+              <div class="sk-load" style="height:10px; width:20%; border-radius:5px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="footer sk-load" style="height:35px; border-radius:0 0 20px 20px"></div>
+      </div>
     </div>
 
     <div v-else-if="filteredPools.length === 0" class="empty">

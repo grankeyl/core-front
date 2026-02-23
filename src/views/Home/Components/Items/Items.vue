@@ -161,9 +161,28 @@ onBeforeUnmount(() => {
     </div>
 
     <div class="lists">
-      <div v-if="loading && funds.length === 0" class="loading-message">
-        <p>Loading funds...</p>
-      </div>
+      <template v-if="loading && funds.length === 0">
+        <div v-for="i in 4" :key="i" class="item sk-card">
+          <div class="inner">
+            <div class="head">
+              <div class="sk-image sk-load"></div>
+              <div class="sk-context">
+                <div class="sk-line sk-load" style="width: 60%"></div>
+                <div class="sk-line sk-load" style="width: 35%"></div>
+              </div>
+              <div class="sk-badge sk-load"></div>
+            </div>
+            <div class="stats">
+              <div v-for="j in 3" :key="j" class="stat">
+                <div class="sk-line sk-load" style="width: 50%; height: 10px"></div>
+                <div class="sk-line sk-load" style="width: 70%; height: 16px; margin-top: 4px"></div>
+              </div>
+            </div>
+            <div class="sk-progress sk-load"></div>
+          </div>
+          <div class="sk-footer sk-load"></div>
+        </div>
+      </template>
       <div v-else-if="!loading && funds.length === 0" class="empty-message">
         <p>No funds available</p>
       </div>

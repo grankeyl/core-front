@@ -5,9 +5,60 @@
   gap: 16px;
   position: relative;
 
-  &.skeleton {
-    .item {
-      opacity: 0.5;
+  .sk-card {
+    cursor: default;
+    pointer-events: none;
+
+    .inner {
+      padding: 12px;
+      padding-bottom: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+
+      .head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .sk-image {
+          width: 50px;
+          height: 50px;
+          border-radius: 12px;
+          flex-shrink: 0;
+        }
+
+        .sk-context {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .sk-badge {
+          width: 60px;
+          height: 25px;
+          border-radius: 22px;
+          flex-shrink: 0;
+        }
+      }
+
+      .sk-line {
+        height: 14px;
+        border-radius: 6px;
+      }
+
+      .sk-progress {
+        height: 10px;
+        border-radius: 10px;
+        width: 100%;
+        margin-bottom: 4px;
+      }
+    }
+
+    .sk-footer {
+      height: 35px;
+      border-radius: 0 0 23px 23px;
     }
   }
 
@@ -79,7 +130,6 @@
     flex-direction: column;
     gap: 16px;
 
-    .loading-message,
     .empty-message {
       width: 100%;
       padding: 48px 24px;
@@ -89,13 +139,6 @@
       border-radius: 24px;
       background: #F8F8FB;
       border: 1px solid rgba(0, 0, 0, 0.02);
-
-      p {
-        color: rgba(0, 0, 0, 0.50);
-        font-size: 16px;
-        font-weight: 500;
-        text-align: center;
-      }
     }
 
     .empty-message {

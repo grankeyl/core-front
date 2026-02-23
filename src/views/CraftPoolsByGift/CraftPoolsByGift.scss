@@ -1,3 +1,16 @@
+.sk-card {
+  pointer-events: none;
+  cursor: default;
+
+  .gift-img.sk-load {
+    border-radius: 10px;
+  }
+
+  .card-footer.sk-load {
+    background: linear-gradient(90deg, #EFEFEF 25%, #e2e2e2 50%, #EFEFEF 75%) !important;
+  }
+}
+
 .craft-by-gift {
   padding: 0 var(--padding-left);
   padding-top: calc(var(--tg-safe-area-inset-top, -45px) + 60px);

@@ -57,8 +57,15 @@ function getTypeLabel(): string {
       </div>
     </div>
 
-    <div v-if="loading && groups.length === 0" class="empty-message">
-      <p>Loading pools...</p>
+    <!-- Skeleton grid -->
+    <div v-if="loading && groups.length === 0" class="grid">
+      <div v-for="i in 6" :key="i" class="card sk-card">
+        <div class="card-image sk-load"></div>
+        <div class="card-info">
+          <div class="sk-load" style="height:14px; width:70%; border-radius:6px"></div>
+          <div class="sk-load" style="height:20px; width:50%; border-radius:10px; margin-top:6px"></div>
+        </div>
+      </div>
     </div>
     <div v-else-if="!loading && groups.length === 0" class="empty-message">
       <p>No pools available</p>
