@@ -113,8 +113,10 @@ onMounted(() => {
       </div>
     </div>
 
-    <div v-if="loading" class="loading-message">
-      <p>Loading gifts...</p>
+    <div v-if="loading" class="lists">
+      <div v-for="i in 9" :key="i" class="item">
+        <div class="image sk-load"></div>
+      </div>
     </div>
 
     <div v-else-if="gifts.length === 0" class="no-dao">

@@ -48,7 +48,7 @@ function apply() {
   <div class="sheet">
     <div class="head">
       <div class="title">
-        <h4>Type</h4>
+        <h4>Status</h4>
       </div>
       <div class="close" @click="close">
         <div class="kit-icon" v-html="CloseIcon"></div>

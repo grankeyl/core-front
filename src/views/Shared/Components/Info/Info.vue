@@ -19,13 +19,32 @@ function formatNumber(num: number): string {
 
 function calculateProgress(): number {
   if (props.fund.fractionNum === 0) return 0;
-  // Если фонд закрыт (не активен) или все доли проданы, показываем полный прогресс
-  if (props.fund.status !== 'ACTIVE' || props.fund.purchasedFractionNum >= props.fund.fractionNum) return 100;
+  if (props.fund.status === 'COMPLETED' || props.fund.status === 'BUYING') return 100;
   return Math.min((props.fund.purchasedFractionNum / props.fund.fractionNum) * 100, 100);
 }
 
 function isFundClosed(): boolean {
-  return props.fund.status !== 'ACTIVE' || props.fund.purchasedFractionNum >= props.fund.fractionNum;
+  return props.fund.status !== 'ACTIVE';
+}
+
+function getStatusClass(): string {
+  switch (props.fund.status) {
+    case 'ACTIVE': return 'active';
+    case 'BUYING': return 'buying';
+    case 'COMPLETED': return 'completed';
+    case 'CANCELLED': return 'cancelled';
+    default: return 'active';
+  }
+}
+
+function getStatusLabel(): string {
+  switch (props.fund.status) {
+    case 'ACTIVE': return 'Active';
+    case 'BUYING': return 'Buying';
+    case 'COMPLETED': return 'Completed';
+    case 'CANCELLED': return 'Cancelled';
+    default: return props.fund.status;
+  }
 }
 
 function formatDate(dateString: string): string {
@@ -76,14 +95,21 @@ onBeforeUnmount(() => {
         <h4>{{ fund.gift.title }}</h4>
         <p>#{{ fund.gift.num }}</p>
       </div>
-      <div class="status" :class="{ fundraising: !isFundClosed(), close: isFundClosed() }">
-        <p>{{ isFundClosed() ? 'Closed' : 'Fundraising' }}</p>
+      <div class="status" :class="getStatusClass()">
+        <p>{{ getStatusLabel() }}</p>
       </div>
     </div>
 
     <div class="progress">
       <div class="progress-line">
-        <div class="line" :class="{ done: isFundClosed() }" :style="{ '--w-progress': `${calculateProgress()}%` }"></div>
+        <div
+          class="line"
+          :class="{
+            done: fund.status === 'COMPLETED' || fund.status === 'BUYING',
+            cancelled: fund.status === 'CANCELLED'
+          }"
+          :style="{ '--w-progress': `${calculateProgress()}%` }"
+        ></div>
       </div>
 
       <div class="context">

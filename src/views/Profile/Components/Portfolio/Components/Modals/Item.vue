@@ -72,7 +72,7 @@ function close() {
           <span>#{{ gift.num }}</span>
         </div>
         <div class="value">
-          <h4>{{ gift.cost.toLocaleString() }}</h4>
+          <h4>{{ (gift.cost ?? 0).toLocaleString() }}</h4>
           <div class="kit-icon" v-html="TonRawIcon"></div>
         </div>
       </div>

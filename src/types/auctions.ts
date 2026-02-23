@@ -34,7 +34,7 @@ export interface Auction {
     creatorId: string;
     targetSum: number;
     giftPriceOnStart: number;
-    gift: Gift;
+    gifts: Gift[];
     purchasedSum: number;
     mySum: number;
 }

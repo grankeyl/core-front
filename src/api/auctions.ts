@@ -32,4 +32,31 @@ export const auctionsApi = {
         });
         return response.data;
     },
+
+    /**
+     * Participate in auction (place bid)
+     * @param id - Auction ID
+     * @param sum - Bid amount
+     */
+    async participate(id: string, sum: number): Promise<void> {
+        const initData = Cookies.get("init-data");
+        await api.post(
+            `/auctions/${id}/participate`,
+            { sum },
+            { headers: { Authorization: initData || "" } }
+        );
+    },
+
+    /**
+     * Create auction (burn gifts)
+     * @param giftIds - Array of gift IDs to burn
+     */
+    async createAuction(giftIds: string[]): Promise<void> {
+        const initData = Cookies.get("init-data");
+        await api.post(
+            "/auctions",
+            { giftIds },
+            { headers: { Authorization: initData || "" } }
+        );
+    },
 };

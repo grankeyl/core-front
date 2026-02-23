@@ -9,7 +9,9 @@ export interface Gift {
     availabilityTotal: number;
     image: string;
     animation: string;
-    cost: number;
-    inAuction: boolean;
-    inFund: boolean;
+    cost: number | null;
+    inAuction?: boolean;
+    inFund?: boolean;
+    inCraft?: boolean;
+    attributes?: Record<string, unknown>;
 }

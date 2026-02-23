@@ -160,24 +160,6 @@
     }
   }
 
-  .loading-message {
-    width: 100%;
-    padding: 48px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 24px;
-    background: #F8F8FB;
-    border: 1px solid rgba(0, 0, 0, 0.02);
-
-    p {
-      color: rgba(0, 0, 0, 0.50);
-      font-size: 16px;
-      font-weight: 500;
-      text-align: center;
-    }
-  }
-
   .lists {
     width: 100%;
     height: fit-content;
@@ -204,6 +186,10 @@
         aspect-ratio: 1 / 1;
         border-radius: 18px;
         overflow: hidden;
+
+        &.sk-load {
+          height: auto;
+        }
 
         img {
           width: 100%;

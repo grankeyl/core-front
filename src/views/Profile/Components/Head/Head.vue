@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useCacheStore } from "../../../../stores/pinia-store";
-
 // Components
 import Wallet from "@/components/common/Wallet/Wallet.vue";
 
 // Icons
-import ChevroneBottomRawIcon from "@/assets/icons/chevrone-bottom.svg?raw"
-import ArrowUp from "@/assets/icons/arrow-up.svg"
+import ChevroneBottomRawIcon from "@/assets/icons/chevrone-bottom.svg?raw";
+import ArrowUpIcon from "@/assets/icons/arrow-up.svg";
+import ArrowDownIcon from "@/assets/icons/arrow-down.svg";
+import BlocksIcon from "@/assets/icons/blocks.svg";
 import SettingsIcon from "@/assets/icons/settings.svg";
 
-const skeleton = ref<boolean>(false);
+const emit = defineEmits<{
+  (e: "setSection", id: string): void;
+}>();
 
+const skeleton = ref<boolean>(false);
 const useCache = useCacheStore() as any;
 </script>
 
@@ -43,7 +47,7 @@ const useCache = useCacheStore() as any;
           <div class="kit-icon" v-html="ChevroneBottomRawIcon"></div>
         </div>
         <div class="info">
-          <img :src="ArrowUp" alt="arrow-up">
+          <img :src="ArrowUpIcon" alt="arrow-up">
           <h4>+$1,250 (2.5%)</h4>
           <p>This month</p>
         </div>
@@ -62,6 +66,20 @@ const useCache = useCacheStore() as any;
         <p>Unrealized PnL</p>
         <h4>$129,40</h4>
       </div>
+    </div>
+    <div class="actions">
+      <button class="action-item">
+        <img :src="ArrowDownIcon" alt="">
+        <span>Deposit</span>
+      </button>
+      <button class="action-item">
+        <img :src="ArrowUpIcon" alt="">
+        <span>Withdrawal</span>
+      </button>
+      <button class="action-item" @click="emit('setSection', 'transactions')">
+        <img :src="BlocksIcon" alt="">
+        <span>Transactions</span>
+      </button>
     </div>
   </div>
 </template>

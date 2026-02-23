@@ -1,55 +1,69 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import type { FundDetail } from "../../../../../types/funds";
+import { computed } from "vue";
+import type { FundDetail, AttributeRarity } from "../../../../../types/funds";
 
 const props = defineProps<{
   typeShared: string;
   fund: FundDetail;
 }>();
 
-const skeleton = ref<boolean>(false);
+const attrs = computed(() => props.fund.gift.attributes);
+
+function formatRarity(rarity?: AttributeRarity): string {
+  if (!rarity) return '';
+  if (rarity.title) return rarity.title;
+  if (rarity.perMille != null) return `${rarity.perMille}%`;
+  return '';
+}
 
 function formatNumber(num: number): string {
   return new Intl.NumberFormat('en-US').format(num);
 }
+
+interface DetailRow {
+  label: string;
+  name: string;
+  rarity: string;
+}
+
+const detailRows = computed<DetailRow[]>(() => {
+  const rows: DetailRow[] = [];
+  const a = attrs.value;
+
+  if (a?.model) {
+    rows.push({ label: 'Model', name: a.model.name, rarity: formatRarity(a.model.rarity) });
+  }
+  if (a?.backdrop) {
+    rows.push({ label: 'Backdrop', name: a.backdrop.name, rarity: formatRarity(a.backdrop.rarity) });
+  }
+  if (a?.pattern) {
+    rows.push({ label: 'Symbol', name: a.pattern.name, rarity: formatRarity(a.pattern.rarity) });
+  }
+
+  rows.push({
+    label: 'Issued',
+    name: `${formatNumber(props.fund.gift.availabilityIssued)} of ${formatNumber(props.fund.gift.availabilityTotal)}`,
+    rarity: '',
+  });
+
+  return rows;
+});
 </script>
 
 <template>
-  <div class="details" :class="{ skeleton }">
+  <div class="details">
     <div v-if="props.typeShared === 'gift'" class="items">
-      <div class="item">
+      <div
+        v-for="(row, i) in detailRows"
+        :key="i"
+        class="item"
+      >
         <div class="left">
-          <p>Model</p>
+          <p>{{ row.label }}</p>
         </div>
         <div class="right">
-          <h4>Cozy Galaxy</h4>
-          <span>1.3%</span>
-        </div>
-      </div>
-      <div class="item">
-        <div class="left">
-          <p>Backdrop</p>
-        </div>
-        <div class="right">
-          <h4>Cozy Galaxy</h4>
-          <span>1.3%</span>
-        </div>
-      </div>
-      <div class="item">
-        <div class="left">
-          <p>Symbol</p>
-        </div>
-        <div class="right">
-          <h4>Cozy Galaxy</h4>
-          <span>1.3%</span>
-        </div>
-      </div>
-      <div class="item">
-        <div class="left">
-          <p>Issued</p>
-        </div>
-        <div class="right">
-          <h4>{{ formatNumber(fund.gift.availabilityIssued) }} of {{ formatNumber(fund.gift.availabilityTotal) }}</h4>
+          <h4>{{ row.name }}</h4>
+          <span v-if="row.rarity">{{ row.rarity }}</span>
         </div>
       </div>
     </div>

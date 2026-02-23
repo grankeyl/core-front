@@ -27,6 +27,33 @@
   }
 }
 
+.skeleton-card {
+  pointer-events: none;
+
+  .cover.sk-load {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 18px;
+    height: auto;
+  }
+
+  .context {
+    gap: 6px !important;
+
+    .sk-title {
+      height: 16px;
+      border-radius: 8px;
+      width: 80%;
+    }
+
+    .sk-value {
+      height: 14px;
+      border-radius: 6px;
+      width: 50%;
+    }
+  }
+}
+
 .items {
   width: 100%;
   height: fit-content;

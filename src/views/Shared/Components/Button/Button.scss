@@ -1,29 +1,78 @@
-.button {
+.button-bar {
   width: 100%;
-  height: 134px;
   max-width: var(--max-width);
   display: flex;
+  align-items: center;
+  gap: 10px;
   position: fixed;
   bottom: 0;
   z-index: 4;
   padding: 0 var(--padding-left);
-  background: linear-gradient(0deg, #FFF 50%, rgba(255, 255, 255, 0.00) 100%);
+  padding-top: 16px;
+  padding-bottom: calc(var(--tg-safe-area-inset-bottom, 24px) + 24px);
+  background: linear-gradient(0deg, #FFF 60%, rgba(255, 255, 255, 0.00) 100%);
 
-  &.skeleton {
-    opacity: 0.6;
+  .back-btn {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: #F4F4F7;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.15s ease;
+
+    &:active {
+      transform: scale(0.92);
+    }
+
+    &:only-child,
+    &.back-btn--full {
+      width: 100%;
+      flex: 1;
+      justify-content: center;
+    }
+
+    &__label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
   }
 
-  button {
-    display: flex;
-    width: 100%;
+  .buy-btn {
+    flex: 1;
     height: 46px;
+    display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
     border-radius: 16px;
     border: 1px solid rgba(0, 0, 0, 0.02);
     background: #355DFF;
-    margin-top: 44px;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+
+    &:active {
+      transform: scale(0.97);
+    }
+
+    &.disabled {
+      background: #E0E0E5;
+      pointer-events: none;
+
+      h4 {
+        color: rgba(0, 0, 0, 0.35);
+      }
+    }
 
     h4 {
       width: fit-content;

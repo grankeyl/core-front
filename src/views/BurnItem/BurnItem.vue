@@ -67,6 +67,27 @@ const overlayStyle = computed(() => {
   };
 });
 
+function normalizeAuction(raw: any): AuctionDetail & { giftsCount?: number } {
+  // API returns gifts: { gift, count } — normalize to gifts: Gift[]
+  let gifts: any[] = [];
+  let giftsCount = 1;
+  if (raw.gifts) {
+    if (Array.isArray(raw.gifts)) {
+      gifts = raw.gifts;
+      giftsCount = gifts.length;
+    } else if (raw.gifts.gift) {
+      gifts = [raw.gifts.gift];
+      giftsCount = raw.gifts.count ?? 1;
+    }
+  }
+  return { ...raw, gifts, giftsCount };
+}
+
+async function handleParticipated() {
+  await new Promise((r) => setTimeout(r, 300));
+  await fetchAuction();
+}
+
 async function fetchAuction() {
   try {
     loading.value = true;
@@ -75,11 +96,11 @@ async function fetchAuction() {
       console.error("Auction ID is missing");
       return;
     }
-    auction.value = await auctionsApi.getAuctionById(id);
+    const raw = await auctionsApi.getAuctionById(id);
+    auction.value = normalizeAuction(raw);
 
-    // Определяем typeShared на основе данных
-    if (auction.value && auction.value.gift) {
-      typeShared.value = 'gift';
+    if (auction.value && auction.value.gifts?.length) {
+      typeShared.value = "gift";
     }
   } catch (error) {
     console.error("Failed to fetch auction:", error);
@@ -136,7 +157,7 @@ onMounted(() => {
       </div>
 
       <div class="controls">
-        <Controls :auction="auction" />
+        <Controls :auction="auction" @participated="handleParticipated" />
       </div>
     </template>
     <div v-else class="error-wrapper">

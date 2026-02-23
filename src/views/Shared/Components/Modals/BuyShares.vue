@@ -31,9 +31,7 @@ const emit = defineEmits<{
 }>();
 
 function close() {
-  // Возвращаем результат покупки при закрытии
   emit('resolve', purchaseSuccess.value);
-  emit('close');
 }
 
 function formatNumber(num: number): string {

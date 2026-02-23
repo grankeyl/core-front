@@ -39,15 +39,20 @@
       gap: 3px;
       border-radius: 43px;
       background: transparent;
-      transition: opacity 0.1s ease-in-out;
+      transition: opacity 0.25s ease, background 0.25s ease, transform 0.15s ease;
+      will-change: transform, opacity;
+
+      &:active {
+        transform: scale(0.88);
+      }
 
       &.active {
         opacity: 1;
         background: #EDEDF0;
 
         .kit-icon {
-          width: 26px;
-          height: 26px;
+          width: 22px;
+          height: 22px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -58,24 +63,31 @@
 
             path {
               fill: #355DFF;
+              transition: fill 0.25s ease;
             }
           }
+        }
+
+        img {
+          opacity: 1;
+          box-shadow: 0 0 0 2px #355DFF;
         }
       }
 
       &:last-child {
         img {
-          width: 22px;
-          height: 22px;
-          object-fit: contain;
-          border-radius: 43px;
+          width: 32px;
+          height: 32px;
+          object-fit: cover;
+          border-radius: 50%;
           background: #58587c;
+          transition: box-shadow 0.25s ease, opacity 0.25s ease;
         }
       }
 
       .kit-icon {
-        width: 26px;
-        height: 26px;
+        width: 22px;
+        height: 22px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -86,6 +98,7 @@
 
           path {
             fill: #A7A7A7;
+            transition: fill 0.25s ease;
           }
         }
       }

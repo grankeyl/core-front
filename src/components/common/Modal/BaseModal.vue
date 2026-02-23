@@ -398,6 +398,7 @@ function detachDrag() {
       :is="component"
       v-bind="{ ...(props?.props||{}) }"
       @close="requestClose()"
+      @resolve="requestClose($event)"
       @dismiss="requestDismiss()"
     />
   </div>

@@ -2,19 +2,52 @@
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { showMenu } from "../../utils/useApp";
+import { useModal } from "../../components/common/Modal";
 import type { CraftPool } from "../../types/craft";
 import { mockPools } from "../../mocks/craft";
+import TypeModal from "../Home/Components/Modals/Type.vue";
 
 import TonIcon from "@/assets/icons/ton.svg";
-import ChevroneRight from "@/assets/icons/chevrone-right.svg";
 import ChevroneBottomIcon from "@/assets/icons/chevrone-bottom.svg";
 
 const PLACEHOLDER = "https://nft.fragment.com/gift/InstantRamen-133166.webp";
 
+const { open } = useModal();
 const route = useRoute();
 const router = useRouter();
 const loading = ref(true);
 const pools = ref<CraftPool[]>([]);
+
+const typeItems = ref<any[]>([
+  { id: "GIFT",     title: "Telegram gifts",             active: false },
+  { id: "PHONE",    title: "Telegram anonymous numbers", active: false },
+  { id: "NICKNAME", title: "Telegram username",          active: false },
+]);
+
+const categoryTitle = computed(() => {
+  if (pools.value.length > 0) return pools.value[0].giftInfo?.title || slug.value;
+  return (history.state?.title as string) || slug.value;
+});
+
+function getTypeLabel(): string {
+  const active = typeItems.value.filter((i) => i.active);
+  if (active.length === 0 || active.length === typeItems.value.length) return "All";
+  if (active.length === 1) return active[0].title;
+  return `${active.length} selected`;
+}
+
+async function handleOpenType() {
+  const choose = open(TypeModal, {
+    Items: typeItems.value,
+    onReset: () => {
+      typeItems.value = typeItems.value.map((i) => ({ ...i, active: false }));
+    },
+    onApply: (data: any[]) => {
+      typeItems.value = data;
+    },
+  });
+  await choose.done.catch(() => null);
+}
 
 const slug = computed(() => route.params.slug as string);
 
@@ -67,10 +100,6 @@ function handleCreatePool() {
   router.push("/craft-pools/create");
 }
 
-function handleOpenMyPools() {
-  router.push("/craft-pools/my");
-}
-
 onMounted(() => {
   showMenu();
   fetchPools();
@@ -82,36 +111,25 @@ onMounted(() => {
     <!-- Header -->
     <div class="top-bar">
       <div class="title">
-        <h4>Craft Pools</h4>
+        <h4>{{ categoryTitle }}</h4>
       </div>
       <button class="create-btn" @click="handleCreatePool">
         <div class="plus-icon">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <circle cx="7" cy="7" r="7" fill="white"/>
-            <path d="M7 4v6M4 7h6" stroke="#6900EA" stroke-width="1.6" stroke-linecap="round"/>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 2.91663V11.0833" stroke="white" stroke-width="1.16667" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2.91669 7H11.0834" stroke="white" stroke-width="1.16667" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
         <span>Create Pool</span>
       </button>
     </div>
 
-    <!-- My Pools -->
-    <div class="my-pools" @click="handleOpenMyPools">
-      <div class="bg-overlay"></div>
-      <div class="content">
-        <div class="left">
-          <span class="label">My Pools</span>
-        </div>
-        <img :src="ChevroneRight" alt="arrow" class="arrow-icon" />
-      </div>
-    </div>
-
     <!-- Filters -->
     <div class="filters">
-      <div class="filter-item">
+      <div class="filter-item" @click="handleOpenType">
         <p>TYPE</p>
         <div class="val">
-          <h4>All</h4>
+          <h4>{{ getTypeLabel() }}</h4>
           <img :src="ChevroneBottomIcon" alt="v" />
         </div>
       </div>

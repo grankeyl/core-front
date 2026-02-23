@@ -33,12 +33,11 @@ async function buyShares() {
     fund: fund.value,
   });
 
-  const result = await choose.done.catch(() => null);
+  await choose.done.catch(() => null);
 
-  // Если покупка успешна, перезагружаем данные фонда
-  if (result) {
-    await fetchFund();
-  }
+  // Всегда обновляем данные после закрытия модалки (покупка могла произойти)
+  await new Promise((r) => setTimeout(r, 300));
+  await fetchFund();
 }
 
 const handleScroll = () => {
@@ -170,18 +169,22 @@ onMounted(() => {
   position: relative;
   height: 100vh;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
 }
 
-/* хедер сверху */
+/* хедер сверху — фиксированный фон, не влияет на высоту скролла */
 .head-wrapper {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1;
+  max-width: var(--max-width);
+  margin: 0 auto;
   will-change: transform, opacity;
   transform-origin: top center;
   transition: transform 0.12s linear, opacity 0.12s linear;
+  background: #000;
+  pointer-events: none;
 }
 
 /* чёрный оверлей по фону */
@@ -201,12 +204,10 @@ onMounted(() => {
 .blocker {
   position: relative;
   z-index: 2;
-  transition: min-height 0.25s ease, padding-top 0.25s ease, transform 0.25s ease;
+  transition: padding-top 0.25s ease, transform 0.25s ease;
 }
 
-/* когда отпустили палец в середине */
 .blocker--expanded {
-  min-height: 100vh;       /* растягиваем на экран */
   padding-top: 16px;
 }
 

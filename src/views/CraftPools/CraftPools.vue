@@ -2,16 +2,25 @@
 import { onMounted, ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { showMenu } from "../../utils/useApp";
+import { useModal } from "../../components/common/Modal";
 import type { CraftPool, CraftPoolGrouped } from "../../types/craft";
 import { mockPools } from "../../mocks/craft";
+import TypeModal from "../Home/Components/Modals/Type.vue";
 
 // Components
 import Head from "./Components/Head/Head.vue";
 import Items from "./Components/Items/Items.vue";
 
+const { open } = useModal();
 const router = useRouter();
 const pools = ref<CraftPool[]>([]);
 const loading = ref<boolean>(true);
+
+const typeItems = ref<any[]>([
+  { id: "GIFT",     title: "Telegram gifts",             active: false },
+  { id: "PHONE",    title: "Telegram anonymous numbers", active: false },
+  { id: "NICKNAME", title: "Telegram username",          active: false },
+]);
 
 const grouped = computed<CraftPoolGrouped[]>(() => {
   const map = new Map<string, CraftPoolGrouped>();
@@ -53,12 +62,21 @@ function handleOpenMyPools() {
   router.push("/craft-pools/my");
 }
 
-function handleOpenType() {
-  // TODO: open type filter modal
+async function handleOpenType() {
+  const choose = open(TypeModal, {
+    Items: typeItems.value,
+    onReset: () => {
+      typeItems.value = typeItems.value.map((i) => ({ ...i, active: false }));
+    },
+    onApply: (data: any[]) => {
+      typeItems.value = data;
+    },
+  });
+  await choose.done.catch(() => null);
 }
 
-function handleOpenGift(slug: string) {
-  router.push(`/craft-pools/gift/${slug}`);
+function handleOpenGift(slug: string, title: string) {
+  router.push({ path: `/craft-pools/gift/${slug}`, state: { title } });
 }
 
 onMounted(() => {
@@ -77,8 +95,9 @@ onMounted(() => {
     <Items
       :groups="grouped"
       :loading="loading"
+      :type-items="typeItems"
       @open-type="handleOpenType"
-      @open-gift="handleOpenGift"
+      @open-gift="(slug, title) => handleOpenGift(slug, title)"
     />
   </div>
 </template>

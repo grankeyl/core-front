@@ -11,6 +11,7 @@ import ChevroneRightRawIcon from "@/assets/icons/chevrone-right-def.svg?raw";
 const { open } = useModal();
 
 const emit = defineEmits<{
+  (e: "participated"): void;
 }>();
 const props = defineProps<{
   auction: AuctionDetail;
@@ -23,8 +24,9 @@ function handleClickBack() {
 }
 
 async function openBurnGifts() {
-  const choose = open(BuyShares, {});
+  const choose = open(BuyShares, { auction: props.auction });
   await choose.done.catch(() => null);
+  emit("participated");
 }
 
 onMounted(() => {

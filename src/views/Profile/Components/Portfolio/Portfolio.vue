@@ -71,8 +71,14 @@ onMounted(() => {
 
 <template>
   <div v-if="!pageType" class="pg">
-    <div v-if="loading" class="loading-message">
-      <p>Loading gifts...</p>
+    <div v-if="loading" class="items">
+      <div v-for="i in 6" :key="i" class="item skeleton-card">
+        <div class="cover sk-load"></div>
+        <div class="context">
+          <div class="sk-load sk-title"></div>
+          <div class="sk-load sk-value"></div>
+        </div>
+      </div>
     </div>
     <div v-else-if="!loading && gifts.length === 0" class="empty-message">
       <p>No gifts available</p>
@@ -88,7 +94,7 @@ onMounted(() => {
             <h4>{{ gift.title }}</h4>
           </div>
           <div class="value">
-            <p>{{ gift.cost.toLocaleString() }}</p>
+            <p>{{ (gift.cost ?? 0).toLocaleString() }}</p>
             <div class="kit-icon" v-html="TonIcon"></div>
           </div>
         </div>

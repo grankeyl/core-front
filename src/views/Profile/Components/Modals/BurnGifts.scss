@@ -328,6 +328,17 @@
     }
   }
 
+  .error {
+    color: #ff3b30;
+    font-size: 13px;
+    text-align: center;
+    padding: 8px;
+
+    p {
+      margin: 0;
+    }
+  }
+
   .footer {
     width: 100%;
     display: flex;
@@ -353,6 +364,11 @@
 
       &:active {
         transform: scale(0.96);
+      }
+
+      &.disabled {
+        opacity: 0.7;
+        pointer-events: none;
       }
 
       & .context {

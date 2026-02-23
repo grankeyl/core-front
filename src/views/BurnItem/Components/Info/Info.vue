@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import type { AuctionDetail } from "@/types/auctions";
 
 // Icons
@@ -12,6 +12,7 @@ const props = defineProps<{
 }>();
 
 const skeleton = ref<boolean>(false);
+const firstGift = computed(() => props.auction.gifts?.[0]);
 const currentTime = ref(Date.now());
 
 let intervalId: number | null = null;
@@ -33,13 +34,18 @@ function formatNumber(num: number): string {
 }
 
 function calculateProgress(): number {
-  if (props.auction.targetSum === 0) return 0;
-  if (props.auction.purchasedSum >= props.auction.targetSum) return 100;
-  return Math.min((props.auction.purchasedSum / props.auction.targetSum) * 100, 100);
+  const { purchasedSum, targetSum } = props.auction;
+  if (targetSum === 0) return purchasedSum > 0 ? 100 : 0;
+  return Math.min((purchasedSum / targetSum) * 100, 100);
 }
 
 function isAuctionClosed(): boolean {
-  return props.auction.purchasedSum >= props.auction.targetSum;
+  const s = props.auction.status;
+  if (s === "COMPLETED" || s === "CANCELLED") return true;
+  const deadlineTime = new Date(props.auction.deadline).getTime();
+  if (currentTime.value >= deadlineTime) return true;
+  if (props.auction.targetSum > 0 && props.auction.purchasedSum >= props.auction.targetSum) return true;
+  return false;
 }
 
 function calculateTimeRemaining(): string {
@@ -65,16 +71,16 @@ function isTimeEnded(): boolean {
   <div class="info" :class="{ skeleton }">
 
     <div class="head">
-      <div v-if="props.typeShared === 'gift'" class="context">
-        <h4>{{ props.auction.gift.title }}</h4>
-        <p>#{{ formatNumber(props.auction.gift.num) }}</p>
+      <div v-if="props.typeShared === 'gift' && firstGift" class="context">
+        <h4>{{ firstGift.title }}</h4>
+        <p>#{{ formatNumber(firstGift.num ?? 0) }}</p>
       </div>
       <div v-if="props.typeShared === 'anonymous'" class="context">
         <h4>Anonymous Numbers</h4>
         <p>+888 0364 8927</p>
       </div>
       <div class="status" :class="isAuctionClosed() ? 'closed' : 'fundraising'">
-        <p>{{ isAuctionClosed() ? 'closed' : 'collecting' }}</p>
+        <p>{{ isAuctionClosed() ? "closed" : (props.auction.status === "ACTIVE" ? "active" : "collecting") }}</p>
       </div>
     </div>
 
@@ -100,7 +106,7 @@ function isTimeEnded(): boolean {
         <div class="context">
           <p>you core points</p>
           <span>
-            <h4>0</h4>
+            <h4>{{ formatNumber(props.auction.mySum ?? 0) }}</h4>
             <div class="kit-icon" v-html="PointRawIcon"></div>
           </span>
         </div>

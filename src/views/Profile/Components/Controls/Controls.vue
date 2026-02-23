@@ -69,7 +69,11 @@ async function openBurnGifts() {
   const choose = open(BurnGifts, {
     items: initPortfolioSelectedGiftsBurnData.value.items,
   });
-  await choose.done.catch(() => null);
+  const result = await choose.done.catch(() => null) as any;
+  if (result?.burned) {
+    useCache.PortfolioSelectedGiftsBurn = [];
+    emit("setPage", "portfolio");
+  }
 }
 
 onMounted(() => {

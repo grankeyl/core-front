@@ -22,17 +22,41 @@ function formatNumber(num: number): string {
 const collectedAmount = computed(() => {
   return props.fund.purchasedFractionNum * props.fund.fractionPrice;
 });
+
+function intToHex(n: number): string {
+  return '#' + n.toString(16).padStart(6, '0');
+}
+
+const coverColors = computed(() => {
+  const bd = props.fund.gift.attributes?.backdrop;
+  if (bd) {
+    return {
+      center: intToHex(bd.centerColor),
+      around: intToHex(bd.edgeColor),
+      text: intToHex(bd.textColor),
+      pattern: intToHex(bd.patternColor),
+    };
+  }
+  return { center: '#CA70C6', around: '#9662D4', text: '#000', pattern: '#333' };
+});
+
+const giftImage = computed(() => {
+  const model = props.fund.gift.attributes?.model;
+  if (model?.image) return model.image;
+  return props.fund.gift.image;
+});
 </script>
 
 <template>
   <div class="head" :class="{ skeleton: skeleton }">
     <div v-if="props.typeShared === 'gift'" class="cover" :style="{
-      '--around-color': '#9662D4',
-      '--center-color': '#CA70C6',
-      '--cover-image': fund.gift.image,
+      '--around-color': coverColors.around,
+      '--center-color': coverColors.center,
+      '--text-color': coverColors.text,
+      '--pattern-color': coverColors.pattern,
     }">
       <div class="image">
-        <img :src="fund.gift.image" :alt="fund.gift.title">
+        <img :src="giftImage" :alt="fund.gift.title">
       </div>
     </div>
 

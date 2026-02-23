@@ -1,120 +1,50 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
-import {
-  Chart,
-  LineController,
-  LineElement,
-  PointElement,
-  LinearScale,
-  CategoryScale,
-  Filler,
-  Tooltip,
-} from "chart.js";
+import { useRouter } from "vue-router";
+import type { Fund } from "../../../../../types/funds";
+
+import FundChart from "./FundChart.vue";
 
 // Icons
-import ChevroneBottomIcon from "@/assets/icons/chevrone-bottom.svg"
-import ChevroneRightRawIcon from "@/assets/icons/chevrone-right-def.svg?raw"
+import ChevroneBottomIcon from "@/assets/icons/chevrone-bottom.svg";
+import ChevroneRightRawIcon from "@/assets/icons/chevrone-right-def.svg?raw";
+
+const router = useRouter();
+
+const props = defineProps<{
+  funds: Fund[];
+  loading: boolean;
+  typeItems: any[];
+}>();
 
 const emit = defineEmits<{
+  (e: "open-type"): void;
   (e: "openGift", data: any): void;
 }>();
 
-const skeleton = ref<boolean>(false);
+function getTypeLabel(): string {
+  const active = props.typeItems.filter((i) => i.active);
+  if (active.length === 0 || active.length === props.typeItems.length) return "All";
+  if (active.length === 1) return active[0].title;
+  return `${active.length} selected`;
+}
 
-Chart.register(
-  LineController,
-  LineElement,
-  PointElement,
-  LinearScale,
-  CategoryScale,
-  Filler,
-  Tooltip
-);
+function formatNumber(n: number) {
+  return new Intl.NumberFormat("en-US").format(n);
+}
 
-const graphCanvas = ref<HTMLCanvasElement | null>(null);
-let chart: Chart | null = null;
-
-const values = [
-  10, 10.4, 10.2, 10.6, 10.5,
-  10, 10.4, 10.2, 10.65, 10.7,
-  10, 10.4, 10.2, 10.6,
-  14.8, 15.0,
-];
-
-onMounted(() => {
-  const canvas = graphCanvas.value;
-  if (!canvas) return;
-
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return;
-
-  const mkStroke = () => {
-    const g = ctx.createLinearGradient(0, 0, canvas.clientWidth || 150, 0);
-    g.addColorStop(0.0, "rgba(56,209,104,0)");    // полностью прозрачно слева
-    g.addColorStop(0.45, "rgba(56,209,104,0)");   // держим пустоту
-    g.addColorStop(0.65, "rgba(56,209,104,0.35)");
-    g.addColorStop(1.0, "rgba(56,209,104,1)");
-    return g;
-  };
-
-  const mkFill = () => {
-    const g = ctx.createLinearGradient(0, 0, 0, canvas.clientHeight || 56);
-    g.addColorStop(0, "rgba(56,209,104,0.14)");
-    g.addColorStop(1, "rgba(56,209,104,0)");
-    return g;
-  };
-
-  chart = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: values.map((_, i) => i),
-      datasets: [
-        {
-          data: values,
-          borderColor: mkStroke(),
-          backgroundColor: mkFill(),
-          fill: true,
-          tension: 0.42,
-          pointRadius: 0,
-          borderWidth: 1.4,                 // на рефе тонкая, но читаемая
-          spanGaps: true,                 // чтобы null просто пропускались
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: false,
-      plugins: { legend: { display: false }, tooltip: { enabled: false } },
-      layout: { padding: 0 },
-      scales: {
-        x: { display: false, grid: { display: false }, offset: false },
-        y: { display: false, grid: { display: false } },
-      },
-      elements: {
-        line: { borderCapStyle: "round", borderJoinStyle: "round" },
-      },
-    },
-  });
-});
-
-onBeforeUnmount(() => {
-  chart?.destroy();
-  chart = null;
-});
-
-function handleOpenGift(data: any) {
-  emit("openGift", data);
+function openFund(fund: Fund) {
+  if (fund.status === "CANCELLED") return;
+  router.push(`/shared/${fund.id}`);
 }
 </script>
 
 <template>
-  <div class="content" :class="{ skeleton: skeleton }">
+  <div class="content" :class="{ skeleton: props.loading }">
     <div class="filters">
-      <div class="item">
+      <div class="item" @click="emit('open-type')">
         <div class="context">
           <p>TYPE</p>
-          <h4>All</h4>
+          <h4>{{ getTypeLabel() }}</h4>
         </div>
         <div class="icon">
           <img :src="ChevroneBottomIcon" alt="chevrone-bottom" />
@@ -123,20 +53,38 @@ function handleOpenGift(data: any) {
     </div>
 
     <div class="lists">
-      <div class="flexed">
-        <div class="item" @click="handleOpenGift({})">
+      <div v-if="props.loading && props.funds.length === 0" class="sk-list">
+        <div v-for="i in 4" :key="i" class="flexed">
+          <div class="item">
+            <div class="inner">
+              <div class="head">
+                <div class="image sk-load"></div>
+                <div class="context">
+                  <div class="sk-load sk-line sk-title"></div>
+                  <div class="sk-load sk-line sk-subtitle"></div>
+                </div>
+                <div class="sk-load sk-graph"></div>
+              </div>
+            </div>
+          </div>
+          <div class="markdown"></div>
+        </div>
+      </div>
+      <div v-else-if="!props.loading && props.funds.length === 0" class="empty-message">
+        <p>No splits yet</p>
+      </div>
+      <div v-for="fund in props.funds" :key="fund.id" class="flexed">
+        <div class="item" @click="openFund(fund)">
           <div class="inner">
             <div class="head">
               <div class="image">
-                <img :src="'https://nft.fragment.com/gift/plushpepe-289.medium.jpg'" alt="">
+                <img :src="fund.gift?.image || 'https://nft.fragment.com/gift/plushpepe-289.medium.jpg'" :alt="fund.gift?.title">
               </div>
               <div class="context">
-                <h4>PlushPepe</h4>
-                <p>#1515</p>
+                <h4>{{ fund.gift?.title || "Gift" }}</h4>
+                <p>#{{ formatNumber(fund.gift?.num ?? 0) }}</p>
               </div>
-              <div class="graph">
-                <canvas ref="graphCanvas"></canvas>
-              </div>
+              <FundChart :fund="fund" />
             </div>
           </div>
         </div>

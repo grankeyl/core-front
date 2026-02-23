@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { useModal } from "../../components/common/Modal";
-import { fundsApi } from "../../api/funds";
-import type { Fund } from "../../types/funds";
+import { auctionsApi } from "../../api/auctions";
+import type { Auction } from "../../types/auctions";
 
 // Components
 import Head from "./Components/Head/Head.vue";
@@ -17,7 +17,7 @@ import { showMenu } from "../../utils/useApp";
 
 const { open } = useModal();
 
-const funds = ref<Fund[]>([]);
+const auctions = ref<Auction[]>([]);
 const loading = ref<boolean>(true);
 
 const typeItems = ref<any[]>([
@@ -90,15 +90,15 @@ async function openSortBy() {
   await choose.done.catch(() => null);
 }
 
-async function fetchFunds() {
+async function fetchAuctions() {
   try {
     loading.value = true;
-    funds.value = await fundsApi.getFunds({
-      onlyActive: false,
+    auctions.value = await auctionsApi.getAuctions({
       withMe: false,
+      onlyActive: true,
     });
   } catch (error) {
-    console.error("Failed to fetch funds:", error);
+    console.error("Failed to fetch auctions:", error);
   } finally {
     loading.value = false;
   }
@@ -107,7 +107,7 @@ async function fetchFunds() {
 onMounted(() => {
   TelegramModule.hideBackButton();
   showMenu();
-  fetchFunds();
+  fetchAuctions();
 });
 </script>
 
@@ -115,13 +115,13 @@ onMounted(() => {
     <div class="section">
         <Head />
         <Items
-          :funds="funds"
+          :auctions="auctions"
           :loading="loading"
           @open-type="openType"
           @open-status="openStatus"
           @open-sort-by="openSortBy"
         />
-        <Funcs v-if="!loading && funds.length > 0" />
+        <Funcs v-if="!loading && auctions.length > 0" :auctions="auctions" />
     </div>
 </template>
 

@@ -14,6 +14,8 @@ export const fundsApi = {
             params: {
                 withMe: params?.withMe ?? false,
                 onlyActive: params?.onlyActive ?? true,
+                type: params?.type,
+                sort: params?.sort ?? "LATEST",
             },
             headers: { Authorization: initData || "" },
         });

@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from "vue";
 // import { useModal } from "../../components/common/Modal";
 
 import Head from "./Components/Head/Head.vue";
 import Split from "./Components/Split/Split.vue";
-import Burns from "./Components/Burns/Burns.vue";
+// import Burns from "./Components/Burns/Burns.vue"; // temporarily hidden
 import DAO from "./Components/DAO/DAO.vue";
 import Portfolio from "./Components/Portfolio/Portfolio.vue";
 import Transactions from "./Components/Transactions/Transactions.vue";
-import Craft from "./Components/Craft/Craft.vue";
 import Controls from "./Components/Controls/Controls.vue";
 
 // Icons
@@ -41,19 +40,19 @@ const page = ref("split");
 const sectionActive = ref("split");
 const sections = [
   { id: "split", title: "Split", unread: false },
-  { id: "burns", title: "Burns", unread: false },
+  // { id: "burns", title: "Burns", unread: false }, // temporarily hidden
   { id: "dao", title: "DAO", unread: true },
-  { id: "craft", title: "Craft", unread: false },
   { id: "portfolio", title: "Portfolio", unread: false },
   { id: "transactions", title: "Transactions", unread: false },
 ];
 
-/* ================= CONFIG ================= */
-const MAX_OFFSET = 180; // высота анимации блока
-const scrollRef = ref<HTMLElement | null>(null);
-const scrollTop = ref(0);
-const lastScrollTop = ref(0);
-const scrollDirection = ref<'up' | 'down'>('down');
+/* ================= REFS ================= */
+const scrollRef  = ref<HTMLElement | null>(null);
+const headRef    = ref<HTMLElement | null>(null);
+const headHeight = ref(380);
+const scrollY    = ref(0);
+let rafId: number | null = null;
+let snapTimer: number | null = null;
 
 const showInfo = computed(() => {
   if (page.value === 'split/gift') return false;
@@ -62,59 +61,64 @@ const showInfo = computed(() => {
   return true;
 });
 
+/* ================= DERIVED ================= */
+// Голова плавно уходит: translateY вниз + scale down + fade
+const headStyle = computed(() => {
+  const p = Math.min(scrollY.value / headHeight.value, 1);
+  return {
+    transform: `translateY(${p * 24}px) scale(${1 - p * 0.05})`,
+    opacity: String(Math.max(1 - p * 1.15, 0)),
+  };
+});
+
+// Border-radius: когда blocker почти доехал до верха
+const blockerAtTop = computed(() => scrollY.value >= headHeight.value - 30);
+
+const blockerMargin = computed(() => ({ marginTop: `${headHeight.value}px` }));
+
 /* ================= SCROLL ================= */
 function handleScroll() {
-  if (!scrollRef.value) return;
-  const currentScroll = scrollRef.value.scrollTop;
+  if (rafId !== null) return;
+  rafId = requestAnimationFrame(() => {
+    rafId = null;
+    if (!scrollRef.value) return;
+    scrollY.value = scrollRef.value.scrollTop;
 
-  // Определяем направление скролла
-  scrollDirection.value = currentScroll > lastScrollTop.value ? 'down' : 'up';
-  lastScrollTop.value = currentScroll;
-
-  // Всегда обновляем scrollTop до реального значения
-  scrollTop.value = currentScroll;
+    // Snap: предугадываем — если остановились в переходной зоне (0..headHeight)
+    if (snapTimer !== null) clearTimeout(snapTimer);
+    snapTimer = window.setTimeout(() => {
+      if (!scrollRef.value) return;
+      const s = scrollRef.value.scrollTop;
+      // Уже в зоне контента — не трогаем
+      if (s >= headHeight.value) return;
+      const ratio = s / headHeight.value;
+      if (ratio >= 0.4) {
+        // Больше 40% пути — доматываем до конца
+        scrollRef.value.scrollTo({ top: headHeight.value, behavior: 'smooth' });
+      } else if (ratio > 0.01) {
+        // Меньше 40% — возвращаем в начало
+        scrollRef.value.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 120);
+  });
 }
 
-/* ================= EASING ================= */
-function easeOutCubic(p: number) {
-  return 1 - Math.pow(1 - p, 3);
-}
+let ro: ResizeObserver | null = null;
 
-function easeInOutCubic(p: number) {
-  return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
-}
-
-/* ================= PROGRESS ================= */
-const progress = computed(() => Math.min(scrollTop.value / MAX_OFFSET, 1));
-
-/* ================= STYLES ================= */
-const headStyle = computed(() => {
-  const p = progress.value;
-  const easedP = easeOutCubic(p);
-  return {
-    transform: `translateY(${easedP * 16}px) scale(${1 - easedP * 0.04})`,
-    opacity: `${Math.max(1 - easedP * 1.6, 0)}`,
-  };
+onMounted(() => {
+  nextTick(() => {
+    if (headRef.value) {
+      headHeight.value = headRef.value.offsetHeight;
+      ro = new ResizeObserver(() => {
+        if (headRef.value) headHeight.value = headRef.value.offsetHeight;
+      });
+      ro.observe(headRef.value);
+    }
+  });
 });
 
-const blockerStyle = computed(() => {
-  const p = progress.value;
-  const easedP = easeInOutCubic(p);
-  const radius = 20 * (1 - easedP);
-  return {
-    borderRadius: `${radius}px ${radius}px 0 0`,
-    transform: `translateY(${-easedP * 6}px)`,
-  };
-});
-
-const blockerInnerStyle = computed(() => {
-  const p = progress.value;
-  const start = 0.3;
-  let innerP = Math.max((p - start) / (1 - start), 0);
-  innerP = easeOutCubic(innerP);
-  return {
-    opacity: `${1 - innerP * 0.15}`,
-  };
+onBeforeUnmount(() => {
+  ro?.disconnect();
 });
 
 function handleSectionClick(id: string) {
@@ -130,16 +134,16 @@ function handlePageClick(name: string) {
   <div
     ref="scrollRef"
     class="profile"
+    :class="{ 'profile--select-gifts': page === 'portfolio/select-gifts' }"
     @scroll="handleScroll"
   >
-    <div class="bg"></div>
-
-    <div class="head" :style="headStyle">
-      <Head />
+    <div class="profile-bg"></div>
+    <div ref="headRef" class="head-wrapper" :style="headStyle">
+      <Head @setSection="handleSectionClick" />
     </div>
 
-    <div class="blocker" :style="blockerStyle">
-      <div class="blocker-inner" :style="blockerInnerStyle">
+    <div class="blocker" :style="blockerMargin" :class="{ 'blocker--at-top': blockerAtTop }">
+      <div class="blocker-inner">
         <div v-if="showInfo" class="info">
           <div class="bg">
             <img :src="VotingBgImage" alt="head-info-bg" />
@@ -184,28 +188,19 @@ function handlePageClick(name: string) {
           @setPage="handlePageClick"
         />
 
+        <!-- Burns temporarily hidden
         <Burns
           v-if="sectionActive === 'burns'"
           :sections="sections"
           :sectionActive="sectionActive"
           @setSection="handleSectionClick"
-
           :page="page"
           @setPage="handlePageClick"
         />
+        -->
 
         <DAO
           v-if="sectionActive === 'dao'"
-          :sections="sections"
-          :sectionActive="sectionActive"
-          @setSection="handleSectionClick"
-
-          :page="page"
-          @setPage="handlePageClick"
-        />
-
-        <Craft
-          v-if="sectionActive === 'craft'"
           :sections="sections"
           :sectionActive="sectionActive"
           @setSection="handleSectionClick"
@@ -242,8 +237,6 @@ function handlePageClick(name: string) {
         @setPage="handlePageClick"
       />
     </div>
-
-    <div class="content"></div>
   </div>
 </template>
 

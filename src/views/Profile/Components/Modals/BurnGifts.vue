@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 // @ts-ignore
 import type { Gift } from "@/types/gifts";
+import { auctionsApi } from "@/api/auctions";
 
 // Icons
 import CloseIcon from "@/assets/icons/close.svg?raw";
@@ -16,8 +17,12 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "close"): void,
+  (e: "close"): void;
+  (e: "resolve", payload: { burned: boolean }): void;
 }>();
+
+const loading = ref(false);
+const error = ref("");
 
 const totalGifts = computed(() => props.items.length);
 
@@ -26,17 +31,29 @@ const totalValue = computed(() => {
 });
 
 const burnReward = computed(() => {
-  // Assuming burn reward is some percentage or calculation based on total value
   return Math.floor(totalValue.value * 0.45);
 });
 
 const burnPoints = computed(() => {
-  // Assuming burn points calculation
   return Math.floor(totalValue.value * 0.1);
 });
 
 function close() {
   emit("close");
+}
+
+async function burn() {
+  if (!props.items.length || loading.value) return;
+  loading.value = true;
+  error.value = "";
+  try {
+    await auctionsApi.createAuction(props.items.map((g) => g.id));
+    emit("resolve", { burned: true });
+  } catch (e: any) {
+    error.value = e?.response?.data?.message ?? e?.message ?? "Failed to burn gifts";
+  } finally {
+    loading.value = false;
+  }
 }
 </script>
 
@@ -109,11 +126,15 @@ function close() {
       </div>
     </div>
 
+    <div v-if="error" class="error">
+      <p>{{ error }}</p>
+    </div>
+
     <div class="footer">
-      <div class="burn" @click="close">
+      <div class="burn" :class="{ disabled: loading }" @click="burn">
         <div class="context">
           <div class="kit-icon" v-html="FireRawIcon"></div>
-          <h4>Burn</h4>
+          <h4>{{ loading ? "..." : "Burn" }}</h4>
         </div>
       </div>
     </div>

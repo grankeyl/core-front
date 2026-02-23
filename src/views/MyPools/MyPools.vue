@@ -2,15 +2,44 @@
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { showMenu } from "../../utils/useApp";
+import { useModal } from "../../components/common/Modal";
 import type { CraftPool } from "../../types/craft";
 import { mockPools } from "../../mocks/craft";
+import TypeModal from "../Home/Components/Modals/Type.vue";
 
 import TonIcon from "@/assets/icons/ton.svg";
 import ChevroneBottomIcon from "@/assets/icons/chevrone-bottom.svg";
 
+const { open } = useModal();
 const router = useRouter();
 const pools = ref<CraftPool[]>([]);
 const loading = ref(true);
+
+const typeItems = ref<any[]>([
+  { id: "GIFT",     title: "Telegram gifts",             active: false },
+  { id: "PHONE",    title: "Telegram anonymous numbers", active: false },
+  { id: "NICKNAME", title: "Telegram username",          active: false },
+]);
+
+function getTypeLabel(): string {
+  const active = typeItems.value.filter((i) => i.active);
+  if (active.length === 0 || active.length === typeItems.value.length) return "All";
+  if (active.length === 1) return active[0].title;
+  return `${active.length} selected`;
+}
+
+async function handleOpenType() {
+  const choose = open(TypeModal, {
+    Items: typeItems.value,
+    onReset: () => {
+      typeItems.value = typeItems.value.map((i) => ({ ...i, active: false }));
+    },
+    onApply: (data: any[]) => {
+      typeItems.value = data;
+    },
+  });
+  await choose.done.catch(() => null);
+}
 
 const filteredPools = computed(() => pools.value);
 
@@ -92,10 +121,10 @@ onMounted(() => {
       <h2>My Pools</h2>
     </div>
 
-    <div class="filter-type" @click="() => {}">
+    <div class="filter-type" @click="handleOpenType">
       <div class="context">
         <p>TYPE</p>
-        <h4>All</h4>
+        <h4>{{ getTypeLabel() }}</h4>
       </div>
       <div class="icon">
         <img :src="ChevroneBottomIcon" alt="chevrone-bottom" />

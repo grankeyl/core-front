@@ -130,6 +130,11 @@
         transform: scale(0.98);
       }
 
+      &.disabled {
+        pointer-events: none;
+        opacity: 0.7;
+      }
+
       .inner {
         padding: 12px;
         padding-bottom: 0;
@@ -185,23 +190,31 @@
 
         .status {
           display: flex;
-          align-items: center;
-          display: flex;
           width: fit-content;
           height: 25px;
           padding: 6px 12px;
           justify-content: center;
           align-items: center;
-          background: rgba(0, 152, 234, 0.10);
           border-radius: 22px;
           gap: 10px;
+          flex-shrink: 0;
 
-          &.fundraising {
+          &.active {
             background: rgba(56, 209, 104, 0.10);
             p { color: #30C15E; }
           }
 
-          &.close {
+          &.buying {
+            background: rgba(53, 93, 255, 0.10);
+            p { color: #355DFF; }
+          }
+
+          &.completed {
+            background: rgba(56, 209, 104, 0.10);
+            p { color: #30C15E; }
+          }
+
+          &.cancelled {
             background: rgba(255, 44, 68, 0.10);
             p { color: #FF2C44; }
           }
@@ -307,6 +320,10 @@
               width: 100%;
               background: linear-gradient(90deg, #38D168 0%, #58F188 100%);
             }
+
+            &.cancelled {
+              background: linear-gradient(90deg, #FF3B30 0%, #FF6961 100%);
+            }
           }
         }
 
@@ -351,6 +368,21 @@
         background: #F4F4F7;
         padding: 0 16px;
 
+        &.cancelled {
+          background: rgba(255, 44, 68, 0.06);
+          p { color: #FF2C44; font-weight: 600; }
+        }
+
+        &.completed {
+          background: rgba(56, 209, 104, 0.06);
+          p { color: #30C15E; font-weight: 600; }
+        }
+
+        &.buying {
+          background: rgba(53, 93, 255, 0.06);
+          p { color: #355DFF; font-weight: 600; }
+        }
+
         p {
           color: rgba(0, 0, 0, 0.50);
           font-size: 12px;
@@ -365,12 +397,6 @@
             &.ended {
               color: #FF1B54;
             }
-          }
-
-          span {
-            color: #000;
-            font-size: 12px;
-            font-weight: 500;
           }
         }
       }

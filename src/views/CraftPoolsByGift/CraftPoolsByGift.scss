@@ -40,8 +40,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        background-color: #7A1EE8;
+        border-radius: 20px;
 
-        svg { width: 18px; height: 18px; }
+        svg {
+          width: 13px;
+          height: 12px;
+        }
       }
 
       span {

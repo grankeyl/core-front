@@ -25,37 +25,43 @@ const props = defineProps<{
   sortByItems: any[];
 }>();
 
-function openType() {
-  emit('open-type');
-}
-
-function openStatus() {
-  emit('open-status');
-}
-
-function openSortBy() {
-  emit('open-sort-by');
-}
-
-function openItem(id: string) {
-  router.push(`/shared/${id}`);
+function openItem(fund: Fund) {
+  if (fund.status === 'CANCELLED') return;
+  router.push(`/shared/${fund.id}`);
 }
 
 function getStatusClass(fund: Fund): string {
-  // Если все доли проданы, считаем закрытым
-  if (fund.purchasedFractionNum >= fund.fractionNum) return 'close';
-  return fund.status === 'ACTIVE' ? 'fundraising' : 'close';
+  switch (fund.status) {
+    case 'ACTIVE': return 'active';
+    case 'BUYING': return 'buying';
+    case 'COMPLETED': return 'completed';
+    case 'CANCELLED': return 'cancelled';
+    default: return 'active';
+  }
+}
+
+function getStatusLabel(fund: Fund): string {
+  switch (fund.status) {
+    case 'ACTIVE': return 'Active';
+    case 'BUYING': return 'Buying';
+    case 'COMPLETED': return 'Completed';
+    case 'CANCELLED': return 'Cancelled';
+    default: return fund.status;
+  }
 }
 
 function calculateProgress(fund: Fund): number {
   if (fund.fractionNum === 0) return 0;
-  // Если все доли проданы или не активен, показываем 100%
-  if (fund.status !== 'ACTIVE' || fund.purchasedFractionNum >= fund.fractionNum) return 100;
+  if (fund.status === 'COMPLETED' || fund.status === 'BUYING') return 100;
+  if (fund.status === 'CANCELLED') {
+    return Math.min((fund.purchasedFractionNum / fund.fractionNum) * 100, 100);
+  }
   return Math.min((fund.purchasedFractionNum / fund.fractionNum) * 100, 100);
 }
 
-function isFundClosed(fund: Fund): boolean {
-  return fund.status !== 'ACTIVE' || fund.purchasedFractionNum >= fund.fractionNum;
+function isProgressDone(fund: Fund): boolean {
+  return fund.status === 'COMPLETED' || fund.status === 'BUYING' ||
+    fund.purchasedFractionNum >= fund.fractionNum;
 }
 
 function formatNumber(num: number): string {
@@ -65,43 +71,39 @@ function formatNumber(num: number): string {
 function calculateTimeRemaining(deadline: string): string {
   const deadlineTime = new Date(deadline).getTime();
   const diff = deadlineTime - currentTime.value;
-
-  if (diff <= 0) {
-    return 'Ended';
-  }
+  if (diff <= 0) return 'Ended';
 
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
 function isTimeEnded(deadline: string): boolean {
-  const deadlineTime = new Date(deadline).getTime();
-  return deadlineTime - currentTime.value <= 0;
+  return new Date(deadline).getTime() - currentTime.value <= 0;
 }
 
-// Computed values for filter labels
+function getFooterText(fund: Fund): string {
+  switch (fund.status) {
+    case 'ACTIVE': return 'Time until fundraising end';
+    case 'BUYING': return 'Gift is being purchased';
+    case 'COMPLETED': return 'Completed';
+    case 'CANCELLED': return 'Cancelled';
+    default: return '';
+  }
+}
+
 function getTypeLabel(): string {
   const activeTypes = props.typeItems.filter(item => item.active);
-  if (activeTypes.length === 0 || activeTypes.length === props.typeItems.length) {
-    return 'All';
-  }
-  if (activeTypes.length === 1) {
-    return activeTypes[0].title;
-  }
+  if (activeTypes.length === 0 || activeTypes.length === props.typeItems.length) return 'All';
+  if (activeTypes.length === 1) return activeTypes[0].title;
   return `${activeTypes.length} selected`;
 }
 
-function getStatusLabel(): string {
+function getStatusLabel2(): string {
   const activeStatuses = props.statusItems.filter(item => item.active);
-  if (activeStatuses.length === 0 || activeStatuses.length === props.statusItems.length) {
-    return 'All';
-  }
-  if (activeStatuses.length === 1) {
-    return activeStatuses[0].title;
-  }
+  if (activeStatuses.length === 0 || activeStatuses.length === props.statusItems.length) return 'All';
+  if (activeStatuses.length === 1) return activeStatuses[0].title;
   return `${activeStatuses.length} selected`;
 }
 
@@ -129,31 +131,31 @@ onBeforeUnmount(() => {
 <template>
   <div class="items" :class="{ skeleton: loading }">
     <div class="filters">
-      <div class="item" @click="openType">
+      <div class="item" @click="emit('open-type')">
         <div class="context">
           <p>TYPE</p>
           <h4>{{ getTypeLabel() }}</h4>
         </div>
         <div class="icon">
-          <img :src="ChevroneBottomIcon" alt="chevrone-bottom" />
+          <img :src="ChevroneBottomIcon" alt="" />
         </div>
       </div>
-      <div class="item" @click="openStatus">
+      <div class="item" @click="emit('open-status')">
         <div class="context">
           <p>status</p>
-          <h4>{{ getStatusLabel() }}</h4>
+          <h4>{{ getStatusLabel2() }}</h4>
         </div>
         <div class="icon">
-          <img :src="ChevroneBottomIcon" alt="chevrone-bottom" />
+          <img :src="ChevroneBottomIcon" alt="" />
         </div>
       </div>
-      <div class="item" @click="openSortBy">
+      <div class="item" @click="emit('open-sort-by')">
         <div class="context">
           <p>sort by</p>
           <h4>{{ getSortByLabel() }}</h4>
         </div>
         <div class="icon">
-          <img :src="ChevroneBottomIcon" alt="chevrone-bottom" />
+          <img :src="ChevroneBottomIcon" alt="" />
         </div>
       </div>
     </div>
@@ -165,11 +167,11 @@ onBeforeUnmount(() => {
       <div v-else-if="!loading && funds.length === 0" class="empty-message">
         <p>No funds available</p>
       </div>
-      <div 
-        v-for="fund in funds" 
-        :key="fund.id" 
+      <div
+        v-for="fund in funds"
+        :key="fund.id"
         class="item"
-        @click="openItem(fund.id)"
+        @click="openItem(fund)"
       >
         <div class="inner">
           <div class="head">
@@ -181,55 +183,56 @@ onBeforeUnmount(() => {
               <p>#{{ fund.gift.num }}</p>
             </div>
             <div class="status" :class="getStatusClass(fund)">
-              <p>{{ isFundClosed(fund) ? 'Closed' : 'Fundraising' }}</p>
+              <p>{{ getStatusLabel(fund) }}</p>
             </div>
           </div>
           <div class="stats">
             <div class="stat">
-              <div class="mark">
-                <p>PRICE</p>
-              </div>
+              <div class="mark"><p>PRICE</p></div>
               <div class="amount">
                 <h4>{{ formatNumber(fund.valuation) }}</h4>
-                <img :src="TonIcon" alt="ton-icon" />
+                <img :src="TonIcon" alt="" />
               </div>
             </div>
-
             <div class="stat">
-              <div class="mark">
-                <p>Collected</p>
-              </div>
+              <div class="mark"><p>Collected</p></div>
               <div class="amount">
                 <h4>{{ formatNumber(fund.purchasedFractionNum * fund.fractionPrice) }}</h4>
-                <img :src="TonIcon" alt="ton-icon" />
+                <img :src="TonIcon" alt="" />
               </div>
             </div>
-
             <div class="stat">
-              <div class="mark">
-                <p>share price</p>
-              </div>
+              <div class="mark"><p>share price</p></div>
               <div class="amount">
                 <h4>{{ formatNumber(fund.fractionPrice) }}</h4>
-                <img :src="TonIcon" alt="ton-icon" />
+                <img :src="TonIcon" alt="" />
               </div>
             </div>
           </div>
           <div class="progress">
             <div class="progress-line">
-              <div class="line" :class="{ done: isFundClosed(fund) }" :style="{ '--w-progress': `${calculateProgress(fund)}%` }"></div>
+              <div
+                class="line"
+                :class="{
+                  done: isProgressDone(fund),
+                  cancelled: fund.status === 'CANCELLED'
+                }"
+                :style="{ '--w-progress': `${calculateProgress(fund)}%` }"
+              ></div>
             </div>
             <div class="context">
               <h4>Share pool</h4>
-              <p v-if="!isFundClosed(fund)">{{ formatNumber(fund.purchasedFractionNum) }}/{{ formatNumber(fund.fractionNum) }}</p>
-              <p v-else>{{ formatNumber(fund.fractionNum) }}/{{ formatNumber(fund.fractionNum) }}</p>
+              <p>{{ formatNumber(fund.purchasedFractionNum) }}/{{ formatNumber(fund.fractionNum) }}</p>
             </div>
           </div>
         </div>
-        <div class="footer">
-          <p v-if="!isFundClosed(fund)">Time until fundraising end</p>
-          <p v-else>Funding Closed</p>
-          <p v-if="!isFundClosed(fund)" class="timer" :class="{ ended: isTimeEnded(fund.deadline) }">
+        <div class="footer" :class="getStatusClass(fund)">
+          <p>{{ getFooterText(fund) }}</p>
+          <p
+            v-if="fund.status === 'ACTIVE'"
+            class="timer"
+            :class="{ ended: isTimeEnded(fund.deadline) }"
+          >
             {{ calculateTimeRemaining(fund.deadline) }}
           </p>
         </div>
@@ -239,5 +242,3 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" src="./Items.scss" scoped></style>
-<style scoped>
-</style>

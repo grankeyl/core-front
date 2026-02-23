@@ -21,8 +21,8 @@ const emit = defineEmits<{
       <button class="create-btn" @click="emit('create-pool')">
         <div class="plus-icon">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="7" cy="7" r="7" fill="white"/>
-            <path d="M7 4v6M4 7h6" stroke="#6900EA" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M7 2.91663V11.0833" stroke="white" stroke-width="1.16667" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2.91666 7H11.0833" stroke="white" stroke-width="1.16667" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
         <span>Create Pool</span>

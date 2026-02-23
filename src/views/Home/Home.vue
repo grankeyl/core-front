@@ -27,8 +27,9 @@ const typeItems = ref<any[]>([
 ]);
 
 const statusItems = ref<any[]>([
-  { id: "fundraising", title: "Fundraising", active: true },
-  { id: "close", title: "Close", active: false },
+  { id: "active",    title: "Active",    active: true },
+  { id: "completed", title: "Completed", active: true },
+  { id: "cancelled", title: "Cancelled", active: true },
 ]);
 
 const sortByItems = ref<any>({
@@ -42,28 +43,31 @@ const sortByItems = ref<any>({
 
 function getOnlyActiveParam(): boolean {
   const activeStatuses = statusItems.value.filter(item => item.active);
-
-  // Если выбраны оба статуса или ни одного - показываем все
-  if (activeStatuses.length === 0 || activeStatuses.length === statusItems.value.length) {
-    return false;
-  }
-
-  // Если выбран только "fundraising" - показываем только активные
-  if (activeStatuses.length === 1 && activeStatuses[0].id === "fundraising") {
-    return true;
-  }
-
-  // Если выбран только "close" - показываем только неактивные (onlyActive=false будет фильтровать на клиенте)
+  if (activeStatuses.length === 0 || activeStatuses.length === statusItems.value.length) return false;
+  if (activeStatuses.length === 1 && activeStatuses[0].id === "active") return true;
   return false;
 }
 
 async function fetchFunds() {
   try {
     loading.value = true;
-    funds.value = await fundsApi.getFunds({
+    const sortMap: Record<string, 'LATEST' | 'LOW_COST' | 'HIGH_COST'> = {
+      latest: 'LATEST',
+      price_low_to_high: 'LOW_COST',
+      price_high_to_low: 'HIGH_COST',
+    };
+    let list = await fundsApi.getFunds({
       onlyActive: getOnlyActiveParam(),
       withMe: false,
+      sort: sortMap[sortByItems.value.active] ?? 'LATEST',
     });
+    const activeStatusIds = statusItems.value.filter((i) => i.active).map((i) => i.id);
+    const allSelected = activeStatusIds.length === statusItems.value.length;
+    if (!allSelected && activeStatusIds.length > 0) {
+      const statusSet = new Set(activeStatusIds.map((s) => s.toUpperCase()));
+      list = list.filter((f) => statusSet.has(f.status));
+    }
+    funds.value = list;
   } catch (error) {
     console.error("Failed to fetch funds:", error);
   } finally {
@@ -94,10 +98,7 @@ async function openStatus() {
   const choose = open(Status, {
     Items: statusItems.value,
     onReset: () => {
-      statusItems.value = statusItems.value.map((i) => ({
-        ...i,
-        active: i.id === "fundraising",
-      }));
+      statusItems.value = statusItems.value.map((i) => ({ ...i, active: true }));
       fetchFunds();
     },
     onApply: (data: any[]) => {

@@ -5,17 +5,25 @@ import type { CraftPoolGrouped } from "../../../../types/craft";
 // Icons
 import ChevroneBottomIcon from "@/assets/icons/chevrone-bottom.svg";
 
-defineProps<{
+const props = defineProps<{
   groups: CraftPoolGrouped[];
   loading: boolean;
+  typeItems: any[];
 }>();
 
 const emit = defineEmits<{
   (e: "open-type"): void;
-  (e: "open-gift", slug: string): void;
+  (e: "open-gift", slug: string, title: string): void;
 }>();
 
 const viewMode = ref<"grid" | "list">("grid");
+
+function getTypeLabel(): string {
+  const active = props.typeItems.filter((i) => i.active);
+  if (active.length === 0 || active.length === props.typeItems.length) return "All";
+  if (active.length === 1) return active[0].title;
+  return `${active.length} selected`;
+}
 </script>
 
 <template>
@@ -24,7 +32,7 @@ const viewMode = ref<"grid" | "list">("grid");
       <div class="filter-type" @click="emit('open-type')">
         <div class="context">
           <p>TYPE</p>
-          <h4>All</h4>
+          <h4>{{ getTypeLabel() }}</h4>
         </div>
         <div class="icon">
           <img :src="ChevroneBottomIcon" alt="chevrone-bottom" />
@@ -62,7 +70,7 @@ const viewMode = ref<"grid" | "list">("grid");
         v-for="group in groups"
         :key="group.slug"
         class="card"
-        @click="emit('open-gift', group.slug)"
+        @click="emit('open-gift', group.slug, group.title)"
       >
         <div class="card-image">
           <img :src="group.image" :alt="group.title" />
@@ -82,7 +90,7 @@ const viewMode = ref<"grid" | "list">("grid");
         v-for="group in groups"
         :key="group.slug"
         class="list-item"
-        @click="emit('open-gift', group.slug)"
+        @click="emit('open-gift', group.slug, group.title)"
       >
         <div class="list-image">
           <img :src="group.image" :alt="group.title" />
