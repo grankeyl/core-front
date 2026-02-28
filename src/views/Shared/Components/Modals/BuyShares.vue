@@ -2,6 +2,7 @@
 import { ref, computed } from "vue";
 import { fundsApi } from "../../../../api/funds";
 import type { FundDetail } from "../../../../types/funds";
+import { useCacheStore } from "../../../../stores/pinia-store";
 
 // Components
 import SharesSlider from "./SharesSlider.vue";
@@ -20,10 +21,14 @@ const props = defineProps<{
   fund: FundDetail;
 }>();
 
+const useCache = useCacheStore() as any;
 const shares = ref(1);
 const status = ref('none');
 const errorMessage = ref('');
 const purchaseSuccess = ref(false);
+
+const userBalance = computed<number>(() => useCache.UserData?.balance ?? 0);
+const insufficientBalance = computed(() => totalPrice.value > userBalance.value);
 
 const emit = defineEmits<{
   (e: "close"): void;
@@ -204,14 +209,26 @@ function retryPayment() {
       </div>
     </div>
 
+    <div class="balance-row">
+      <p>Your balance</p>
+      <div class="balance-val">
+        <h4>{{ formatNumber(userBalance) }}</h4>
+        <img :src="TonIcon" alt="ton-icon" />
+      </div>
+    </div>
+
     <div class="footer">
-      <div class="amount">
+      <div class="amount" :class="{ insufficient: insufficientBalance }">
         <img :src="TonIcon" alt="ton-icon" />
         <h4>{{ formatNumber(totalPrice) }}</h4>
       </div>
       <div class="button">
-        <button @click="buyShares" :disabled="availableShares <= 0">
-          <h4>{{ availableShares > 0 ? 'Buy' : 'Sold out' }}</h4>
+        <button
+          @click="buyShares"
+          :disabled="availableShares <= 0 || insufficientBalance"
+          :class="{ sold: availableShares <= 0, insufficient: insufficientBalance }"
+        >
+          <h4>{{ availableShares <= 0 ? 'Sold out' : insufficientBalance ? 'Insufficient balance' : 'Buy' }}</h4>
         </button>
       </div>
     </div>

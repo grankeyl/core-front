@@ -4,7 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useModal } from "../../components/common/Modal";
 import { hideMenu } from "../../utils/useApp";
 import type { CraftPool } from "../../types/craft";
-import { mockPools } from "../../mocks/craft";
+import { craftApi } from "../../api/craft";
 
 import Head from "./Components/Head/Head.vue";
 import Info from "./Components/Info/Info.vue";
@@ -62,16 +62,21 @@ const isCompleted = computed(() => pool.value?.status === "COMPLETED");
 const isActive = computed(() => pool.value?.status === "ACTIVE");
 
 async function fetchPool() {
-  loading.value = true;
-  await new Promise((r) => setTimeout(r, 300));
-  pool.value = mockPools.find((p) => p.id === poolId.value) || mockPools[0];
-  loading.value = false;
+  try {
+    loading.value = true;
+    pool.value = await craftApi.getCraftById(poolId.value);
+  } catch (e) {
+    console.error("Failed to fetch pool:", e);
+    pool.value = null;
+  } finally {
+    loading.value = false;
+  }
 }
 
 async function handleBringGifts() {
   const modal = open(BringGifts, {
     poolId: poolId.value,
-    giftSlug: pool.value?.giftInfo?.slug || "",
+    collectionName: pool.value?.giftInfo?.collectionName || "",
     onSuccess: () => fetchPool(),
   });
   await modal.done.catch(() => null);

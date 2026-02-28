@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import type { Gift } from "../../../../types/gifts";
-import { mockGifts } from "../../../../mocks/craft";
+import { giftsApi } from "../../../../api/gifts";
+import { craftApi } from "../../../../api/craft";
 
 import TonIcon from "@/assets/icons/ton.svg";
 
 const props = defineProps<{
   poolId: string;
-  giftSlug: string;
+  collectionName: string;
   onSuccess?: () => void;
 }>();
 
@@ -23,6 +24,7 @@ const gifts = ref<Gift[]>([]);
 const selected = ref<Set<string>>(new Set());
 const loading = ref(true);
 const submitting = ref(false);
+const submitError = ref<string | null>(null);
 
 const maxSlots = 4;
 
@@ -44,12 +46,18 @@ const craftReward = computed(() => {
 });
 
 async function fetchGifts() {
-  loading.value = true;
-  await new Promise((r) => setTimeout(r, 300));
-  gifts.value = props.giftSlug
-    ? mockGifts.filter((g) => g.slug === props.giftSlug)
-    : mockGifts;
-  loading.value = false;
+  try {
+    loading.value = true;
+    const all = await giftsApi.getGifts();
+    gifts.value = all.filter(
+      (g) => g.craftAllowed !== false && g.title === props.collectionName
+    );
+  } catch (e) {
+    console.error("Failed to fetch gifts:", e);
+    gifts.value = [];
+  } finally {
+    loading.value = false;
+  }
 }
 
 function openSelection() {
@@ -75,10 +83,16 @@ function goBackToSelect() {
 async function submit() {
   if (selected.value.size === 0 || submitting.value) return;
   submitting.value = true;
-  await new Promise((r) => setTimeout(r, 600));
-  submitting.value = false;
-  props.onSuccess?.();
-  emit("close");
+  submitError.value = null;
+  try {
+    await craftApi.participate(props.poolId, [...selected.value]);
+    props.onSuccess?.();
+    emit("close");
+  } catch (e: any) {
+    submitError.value = e?.response?.data?.message || "Something went wrong";
+  } finally {
+    submitting.value = false;
+  }
 }
 
 onMounted(fetchGifts);
@@ -185,6 +199,9 @@ onMounted(fetchGifts);
         </div>
       </div>
     </template>
+
+    <!-- Error -->
+    <p v-if="submitError" class="submit-error">{{ submitError }}</p>
 
     <!-- Footer -->
     <div class="modal-footer">
@@ -333,9 +350,10 @@ onMounted(fetchGifts);
   .gift-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    max-height: 240px;
+    gap: 10px;
+    max-height: 280px;
     overflow-y: auto;
+    padding: 6px;
 
     .gift-cell {
       aspect-ratio: 1;
@@ -427,6 +445,15 @@ onMounted(fetchGifts);
         height: 24px;
       }
     }
+  }
+
+  /* ── Error ── */
+  .submit-error {
+    font-size: 13px;
+    font-weight: 500;
+    color: #FF3B30;
+    text-align: center;
+    font-family: 'Onest', var(--font-family);
   }
 
   /* ── Footer ── */

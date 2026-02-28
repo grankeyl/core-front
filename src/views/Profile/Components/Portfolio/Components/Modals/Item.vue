@@ -5,14 +5,14 @@ import { giftsApi } from "../../../../../../api/gifts";
 import { showSuccessToast, showErrorToast } from "../../../../../../utils/toastManager";
 import TelegramRawIcon from "@/assets/icons/telegram.svg?raw";
 import ArrowDownRawIcon from "@/assets/icons/arrow-down.svg?raw";
-import FireRawIcon from "@/assets/icons/fire.svg?raw";
+import EditRawIcon from "@/assets/icons/edit.svg?raw";
 import TonRawIcon from "@/assets/icons/ton.svg?raw";
 
 const emit = defineEmits<{
   (e: "close"): void,
   (e: "reset"): void,
   (e: "apply", data: any[]): void,
-  (e: "open-select-gifts"): void,
+  (e: "open-select-gifts", gift: Gift): void,
 }>();
 
 const props = defineProps<{
@@ -50,7 +50,7 @@ async function handleWithdraw() {
 }
 
 function openSelectGifts() {
-  emit("open-select-gifts");
+  emit("open-select-gifts", props.gift);
   close();
 }
 
@@ -94,12 +94,12 @@ function close() {
           <h4>{{ isWithdrawing ? 'Transferring...' : 'Transfer' }}</h4>
         </div>
       </div>
-      <div class="control burn" @click="openSelectGifts">
+      <div class="control craft" :class="{ disabled: gift.craftAllowed === false }" @click="gift.craftAllowed !== false && openSelectGifts()">
         <div class="image">
-          <div class="kit-icon" v-html="FireRawIcon"></div>
+          <div class="kit-icon" v-html="EditRawIcon"></div>
         </div>
         <div class="text">
-          <h4>Burn</h4>
+          <h4>Craft</h4>
         </div>
       </div>
     </div>

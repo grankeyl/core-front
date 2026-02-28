@@ -7,11 +7,13 @@ import type { Gift } from "../../../../types/gifts";
 
 import SelectGifts from "./Pages/SelectGifts/SelectGifts.vue";
 import Item from "./Components/Modals/Item.vue";
+import { useCacheStore } from "../../../../stores/pinia-store";
 
 // Icons
 import TonIcon from "@/assets/icons/ton.svg?raw";
 
 const { open } = useModal();
+const useCache = useCacheStore();
 
 const pageType = ref('');
 const gifts = ref<Gift[]>([]);
@@ -31,12 +33,15 @@ const props = defineProps<{
 async function openItem(gift: Gift) {
   const choose = open(Item, {
     gift: gift,
-    onOpenSelectGifts: openSelectGifts,
+    onOpenSelectGifts: (selectedGift: Gift) => openSelectGifts(selectedGift),
   });
   await choose.done.catch(() => null);
 }
 
-function openSelectGifts() {
+function openSelectGifts(preselectedGift?: Gift) {
+  if (preselectedGift) {
+    useCache.PortfolioSelectedGiftsBurn = [preselectedGift];
+  }
   pageType.value = 'portfolio/select-gifts';
   emit("setPage", 'portfolio/select-gifts');
 }

@@ -222,16 +222,16 @@
       pointer-events: none;
     }
 
-    &.burn {
+    &.craft {
       .kit-icon {
         :deep(svg) {
           path {
-            fill: #FF1B54 !important;
+            fill: #355DFF !important;
           }
         }
       }
       .text h4 {
-        color: #FF1B54 !important;
+        color: #355DFF !important;
       }
     }
 

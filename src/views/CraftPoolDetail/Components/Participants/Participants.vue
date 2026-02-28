@@ -14,11 +14,9 @@ function getDisplayName(member: { username: string; firstName: string; lastName:
   return "Anonymous";
 }
 
-function calculateShare(index: number): string {
+function calculateShare(_index: number): string {
   const total = props.pool.members?.length || 1;
-  const weights = props.pool.members.map((_, i) => total - i);
-  const sum = weights.reduce((a, b) => a + b, 0);
-  return ((weights[index] / sum) * 100).toFixed(1);
+  return (100 / total).toFixed(1);
 }
 
 function getGiftImage(member: { gift?: { image?: string } }): string {

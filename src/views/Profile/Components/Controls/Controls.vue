@@ -3,8 +3,8 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useCacheStore } from "../../../../stores/pinia-store";
 import { useModal } from "../../../../components/common/Modal";
 
-import BurnRawIcon from "@/assets/icons/fire.svg?raw";
-import BurnGifts from "../Modals/BurnGifts.vue";
+import EditRawIcon from "@/assets/icons/edit.svg?raw";
+import CraftGifts from "../Modals/CraftGifts.vue";
 import ChevroneRightRawIcon from "@/assets/icons/chevrone-right-def.svg?raw";
 
 const { open } = useModal();
@@ -20,7 +20,7 @@ const useCache = useCacheStore();
 
 const isVisibleBack = ref(false);
 const isVisibleVoting = ref(false);
-const isVisibleBurn = ref(false);
+const isVisibleCraft = ref(false);
 
 function handleClickBack() {
   if (props.page === "split/gift") {
@@ -46,7 +46,7 @@ watch(
     } else {
       isVisibleBack.value = false;
       isVisibleVoting.value = false;
-      isVisibleBurn.value = false;
+      isVisibleCraft.value = false;
     }
   },
   { immediate: true },
@@ -62,15 +62,15 @@ const initPortfolioSelectedGiftsBurnData = computed(() => {
 });
 const initPortfolioSelectedGiftsBurn = () => {
   isVisibleBack.value = true;
-  isVisibleBurn.value = true;
+  isVisibleCraft.value = true;
 };
 
-async function openBurnGifts() {
-  const choose = open(BurnGifts, {
+async function openCraftGifts() {
+  const choose = open(CraftGifts, {
     items: initPortfolioSelectedGiftsBurnData.value.items,
   });
   const result = await choose.done.catch(() => null) as any;
-  if (result?.burned) {
+  if (result?.crafted) {
     useCache.PortfolioSelectedGiftsBurn = [];
     emit("setPage", "portfolio");
   }
@@ -80,9 +80,10 @@ onMounted(() => {
   if (props.page === "burns/history") {
     isVisibleBack.value = true;
   }
-  if (props.page === "portfolio/select-gifts") {
-    initPortfolioSelectedGiftsBurn();
-  }
+    if (props.page === "portfolio/select-gifts") {
+      initPortfolioSelectedGiftsBurn();
+    }
+    // isVisibleCraft initialized via watch
 });
 </script>
 
@@ -96,11 +97,11 @@ onMounted(() => {
         <h4>Start voting</h4>
       </button>
     </div>
-    <div v-if="isVisibleBurn" class="burn">
-      <button @click="openBurnGifts">
+    <div v-if="isVisibleCraft" class="craft">
+      <button @click="openCraftGifts">
         <div class="context">
-          <div class="kit-icon" v-html="BurnRawIcon"></div>
-          <h4>Burn</h4>
+          <div class="kit-icon" v-html="EditRawIcon"></div>
+          <h4>Craft</h4>
         </div>
         <div class="info">
           <p>{{ initPortfolioSelectedGiftsBurnData.count }} Gift</p>

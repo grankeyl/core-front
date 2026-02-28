@@ -8,7 +8,7 @@ const skeleton = ref<boolean>(true);
   <div class="head" :class="{ skeleton: skeleton }">
     <div class="top">
       <div class="title">
-        <h4>Select gifts to burn</h4>
+        <h4>Select gifts to craft</h4>
       </div>
     </div>
   </div>

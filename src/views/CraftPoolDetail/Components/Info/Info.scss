@@ -59,6 +59,11 @@
         p { color: #FF2C44; }
       }
 
+      &.crafting {
+        background: rgba(150, 52, 255, 0.10);
+        p { color: #9634FF; }
+      }
+
       p {
         color: #000;
         text-align: center;

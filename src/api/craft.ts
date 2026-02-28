@@ -1,6 +1,6 @@
 import api from "./index";
 import Cookies from "js-cookie";
-import type { CraftPool } from "../types/craft";
+import type { CraftPool, CraftCollection } from "../types/craft";
 
 export const craftApi = {
   /**
@@ -33,6 +33,28 @@ export const craftApi = {
   async getCraftById(id: string): Promise<CraftPool> {
     const initData = Cookies.get("init-data");
     const response = await api.get<CraftPool>(`/craft/${id}`, {
+      headers: { Authorization: initData || "" },
+    });
+    return response.data;
+  },
+
+  /**
+   * Get craft pools by collection name
+   */
+  async getCollectionByName(collectionName: string): Promise<CraftPool[]> {
+    const initData = Cookies.get("init-data");
+    const response = await api.get<CraftPool[]>(`/craft/collections/${encodeURIComponent(collectionName)}`, {
+      headers: { Authorization: initData || "" },
+    });
+    return response.data;
+  },
+
+  /**
+   * Get gift collections (categories)
+   */
+  async getCollections(): Promise<CraftCollection[]> {
+    const initData = Cookies.get("init-data");
+    const response = await api.get<CraftCollection[]>("/craft/collections", {
       headers: { Authorization: initData || "" },
     });
     return response.data;

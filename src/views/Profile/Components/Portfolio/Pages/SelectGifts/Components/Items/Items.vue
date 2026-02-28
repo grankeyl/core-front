@@ -35,7 +35,8 @@ const selectedGifts = computed(() => {
 async function fetchGifts() {
   try {
     loading.value = true;
-    gifts.value = await giftsApi.getGifts();
+    const all = await giftsApi.getGifts();
+    gifts.value = all.filter(g => g.craftAllowed !== false);
   } catch (error) {
     console.error("Failed to fetch gifts:", error);
   } finally {

@@ -125,11 +125,11 @@ onMounted(() => {
         <div class="inner">
           <div class="card-head">
             <div class="image">
-              <img :src="pool.giftInfo?.image" :alt="pool.giftInfo?.title" />
+              <img :src="pool.giftInfo?.image" :alt="pool.members[0]?.gift?.title || pool.giftInfo?.collectionName" />
             </div>
             <div class="context">
-              <h4>{{ pool.giftInfo?.title }}</h4>
-              <p>#{{ pool.giftInfo?.num }}</p>
+              <h4>{{ pool.members[0]?.gift?.title || pool.giftInfo?.collectionName }}</h4>
+              <p v-if="pool.members[0]?.gift?.num">#{{ pool.members[0].gift.num }}</p>
             </div>
             <div class="status" :class="getStatusClass(pool.status)">
               <span>{{ getStatusLabel(pool.status) }}</span>

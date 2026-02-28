@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import type { CraftPoolGrouped } from "../../../../types/craft";
+import type { CraftCollection } from "../../../../types/craft";
 
 // Icons
 import ChevroneBottomIcon from "@/assets/icons/chevrone-bottom.svg";
 
 const props = defineProps<{
-  groups: CraftPoolGrouped[];
+  collections: CraftCollection[];
   loading: boolean;
   typeItems: any[];
 }>();
@@ -58,7 +58,7 @@ function getTypeLabel(): string {
     </div>
 
     <!-- Skeleton grid -->
-    <div v-if="loading && groups.length === 0" class="grid">
+    <div v-if="loading" class="grid">
       <div v-for="i in 6" :key="i" class="card sk-card">
         <div class="card-image sk-load"></div>
         <div class="card-info">
@@ -67,45 +67,46 @@ function getTypeLabel(): string {
         </div>
       </div>
     </div>
-    <div v-else-if="!loading && groups.length === 0" class="empty-message">
-      <p>No pools available</p>
+
+    <div v-else-if="collections.length === 0" class="empty-message">
+      <p>No collections available</p>
     </div>
 
-    <!-- Grid mode: gift categories -->
+    <!-- Grid mode -->
     <div v-else-if="viewMode === 'grid'" class="grid">
       <div
-        v-for="group in groups"
-        :key="group.slug"
+        v-for="col in collections"
+        :key="col.collectionName"
         class="card"
-        @click="emit('open-gift', group.slug, group.title)"
+        @click="emit('open-gift', col.collectionName, col.collectionName)"
       >
         <div class="card-image">
-          <img :src="group.image" :alt="group.title" />
+          <img :src="col.image" :alt="col.collectionName" />
         </div>
         <div class="card-info">
-          <h4>{{ group.title }}</h4>
+          <h4>{{ col.collectionName }}</h4>
           <div class="badge">
-            <span>{{ group.poolCount }} POOLS</span>
+            <span>{{ col.count }} POOLS</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- List mode: gift categories as rows -->
+    <!-- List mode -->
     <div v-else class="list">
       <div
-        v-for="group in groups"
-        :key="group.slug"
+        v-for="col in collections"
+        :key="col.collectionName"
         class="list-item"
-        @click="emit('open-gift', group.slug, group.title)"
+        @click="emit('open-gift', col.collectionName, col.collectionName)"
       >
         <div class="list-image">
-          <img :src="group.image" :alt="group.title" />
+          <img :src="col.image" :alt="col.collectionName" />
         </div>
         <div class="list-context">
-          <h4>{{ group.title }}</h4>
+          <h4>{{ col.collectionName }}</h4>
           <div class="badge">
-            <span>{{ group.poolCount }} POOLS</span>
+            <span>{{ col.count }} POOLS</span>
           </div>
         </div>
       </div>

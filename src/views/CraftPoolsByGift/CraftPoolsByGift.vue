@@ -4,7 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import { showMenu } from "../../utils/useApp";
 import { useModal } from "../../components/common/Modal";
 import type { CraftPool } from "../../types/craft";
-import { mockPools } from "../../mocks/craft";
+import { craftApi } from "../../api/craft";
 import TypeModal from "../Home/Components/Modals/Type.vue";
 
 import TonIcon from "@/assets/icons/ton.svg";
@@ -19,13 +19,13 @@ const loading = ref(true);
 const pools = ref<CraftPool[]>([]);
 
 const typeItems = ref<any[]>([
-  { id: "GIFT",     title: "Telegram gifts",             active: false },
-  { id: "PHONE",    title: "Telegram anonymous numbers", active: false },
-  { id: "NICKNAME", title: "Telegram username",          active: false },
+  { id: "GIFT",     title: "Gifts",             active: false },
+  { id: "PHONE",    title: "Anonymous numbers", active: false },
+  { id: "NICKNAME", title: "Username",          active: false },
 ]);
 
 const categoryTitle = computed(() => {
-  if (pools.value.length > 0) return pools.value[0].giftInfo?.title || slug.value;
+  if (pools.value.length > 0) return pools.value[0].giftInfo?.collectionName || slug.value;
   return (history.state?.title as string) || slug.value;
 });
 
@@ -52,10 +52,15 @@ async function handleOpenType() {
 const slug = computed(() => route.params.slug as string);
 
 async function fetchPools() {
-  loading.value = true;
-  await new Promise((r) => setTimeout(r, 300));
-  pools.value = mockPools.filter((p) => (p.giftInfo?.slug || p.id) === slug.value);
-  loading.value = false;
+  try {
+    loading.value = true;
+    pools.value = await craftApi.getCollectionByName(slug.value);
+  } catch (e) {
+    console.error("Failed to fetch pools:", e);
+    pools.value = [];
+  } finally {
+    loading.value = false;
+  }
 }
 
 function getStatusLabel(status: string): string {
@@ -198,11 +203,11 @@ onMounted(() => {
       >
         <div class="card-head">
           <div class="gift-img">
-            <img :src="giftImage(pool)" :alt="pool.giftInfo?.title" />
+            <img :src="giftImage(pool)" :alt="pool.members[0]?.gift?.title || pool.giftInfo?.collectionName" />
           </div>
           <div class="gift-ctx">
-            <h4>{{ pool.giftInfo?.title }}</h4>
-            <p>#{{ pool.giftInfo?.num }}</p>
+            <h4>{{ pool.members[0]?.gift?.title || pool.giftInfo?.collectionName }}</h4>
+            <p v-if="pool.members[0]?.gift?.num">#{{ pool.members[0].gift.num }}</p>
           </div>
           <div class="status" :class="getStatusClass(pool.status)">
             <span>{{ getStatusLabel(pool.status) }}</span>

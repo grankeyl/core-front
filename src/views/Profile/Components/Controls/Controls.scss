@@ -76,6 +76,53 @@
     }
   }
 
+  .craft {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+
+    button {
+      width: 100%;
+      height: 48px;
+      border-radius: 16px;
+      border: 1px solid rgba(0, 0, 0, 0.02);
+      background: #355DFF;
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      justify-content: space-between;
+      cursor: pointer;
+
+      .context {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        .kit-icon {
+          width: 18px;
+          height: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          :deep(svg) {
+            width: 100%;
+            height: 100%;
+            path { fill: #fff; }
+          }
+        }
+
+        h4 { color: #FFF; font-size: 14px; font-weight: 600; line-height: normal; }
+      }
+
+      .info {
+        p { color: #FFF; font-size: 14px; font-weight: 600; line-height: normal; }
+      }
+    }
+  }
+
   .burn {
     display: flex;
     align-items: center;

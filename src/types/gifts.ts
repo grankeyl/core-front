@@ -13,5 +13,6 @@ export interface Gift {
     inAuction?: boolean;
     inFund?: boolean;
     inCraft?: boolean;
+    craftAllowed?: boolean;
     attributes?: Record<string, unknown>;
 }

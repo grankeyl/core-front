@@ -43,7 +43,7 @@ const useCache = useCacheStore() as any;
           <p>Total balance</p>
         </div>
         <div class="amount">
-          <h4>${{ useCache.UserData.balance }}</h4>
+          <h4>${{ useCache.UserData.balanceInUsd }}</h4>
           <div class="kit-icon" v-html="ChevroneBottomRawIcon"></div>
         </div>
         <div class="info">

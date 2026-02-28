@@ -11,11 +11,16 @@ export interface CraftMember {
   gift: Gift;
 }
 
+export interface CraftPoolGiftInfo {
+  image: string;
+  collectionName: string;
+}
+
 export interface CraftPool {
   id: string;
   status: CraftStatus;
   members: CraftMember[];
-  giftInfo: Gift;
+  giftInfo: CraftPoolGiftInfo;
   createdAt: string;
   updatedAt: string;
   deadline: string;
@@ -27,4 +32,10 @@ export interface CraftPoolGrouped {
   image: string;
   poolCount: number;
   pools: CraftPool[];
+}
+
+export interface CraftCollection {
+  collectionName: string;
+  image: string;
+  count: number;
 }

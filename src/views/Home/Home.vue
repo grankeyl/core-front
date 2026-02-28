@@ -20,9 +20,9 @@ const funds = ref<Fund[]>([]);
 const loading = ref<boolean>(true);
 
 const typeItems = ref<any[]>([
-  { id: "tg_gifts",        title: "Telegram gifts",             active: true },
-  { id: "tg_anon_numbers", title: "Telegram anonymous numbers", active: false },
-  { id: "tg_usernames",    title: "Telegram username",          active: false },
+  { id: "tg_gifts",        title: "Gifts",             active: true },
+  { id: "tg_anon_numbers", title: "Anonymous numbers", active: false },
+  { id: "tg_usernames",    title: "Username",          active: false },
   { id: "cocoon",          title: "Cocoon",                     active: false },
 ]);
 

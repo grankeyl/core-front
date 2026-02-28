@@ -36,13 +36,13 @@ import VotingBgImage from "@/assets/images/profile-pg/voting-bg.png";
 // openDaoRuleModal();
 
 /* ================= DATA ================= */
-const page = ref("split");
-const sectionActive = ref("split");
+const page = ref("portfolio");
+const sectionActive = ref("portfolio");
 const sections = [
+  { id: "portfolio", title: "Portfolio", unread: false },
   { id: "split", title: "Split", unread: false },
   // { id: "burns", title: "Burns", unread: false }, // temporarily hidden
   { id: "dao", title: "DAO", unread: true },
-  { id: "portfolio", title: "Portfolio", unread: false },
   { id: "transactions", title: "Transactions", unread: false },
 ];
 

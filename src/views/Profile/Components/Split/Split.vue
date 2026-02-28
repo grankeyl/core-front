@@ -16,9 +16,9 @@ const funds = ref<Fund[]>([]);
 const loading = ref(true);
 
 const typeItems = ref<any[]>([
-  { id: "GIFT",     title: "Telegram gifts",             active: false },
-  { id: "PHONE",    title: "Telegram anonymous numbers", active: false },
-  { id: "NICKNAME", title: "Telegram username",          active: false },
+  { id: "GIFT",     title: "Gifts",             active: false },
+  { id: "PHONE",    title: "Anonymous numbers", active: false },
+  { id: "NICKNAME", title: "Username",          active: false },
 ]);
 
 const emit = defineEmits<{

@@ -21,7 +21,7 @@ function giftImage(): string {
       '--center-color': '#CA70C6',
     }">
       <div class="image">
-        <img :src="giftImage()" :alt="pool.giftInfo?.title || 'Gift'" />
+        <img :src="giftImage()" :alt="pool.members[0]?.gift?.title || pool.giftInfo?.collectionName || 'Gift'" />
       </div>
     </div>
 

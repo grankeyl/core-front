@@ -27,6 +27,7 @@ onUnmounted(() => {
 });
 
 function getStatusLabel(status: string): string {
+  if (status === "ACTIVE" && props.isFull) return "crafting";
   switch (status) {
     case "ACTIVE": return "opened";
     case "COMPLETED": return "completed";
@@ -36,6 +37,7 @@ function getStatusLabel(status: string): string {
 }
 
 function getStatusClass(status: string): string {
+  if (status === "ACTIVE" && props.isFull) return "crafting";
   switch (status) {
     case "ACTIVE": return "fundraising";
     case "COMPLETED": return "completed";
@@ -69,7 +71,7 @@ function isTimeEnded(): boolean {
   <div class="info">
     <div class="head">
       <div class="context">
-        <h4>{{ pool.giftInfo?.title || 'Unknown Gift' }}</h4>
+        <h4>{{ pool.members[0]?.gift?.title || pool.giftInfo?.collectionName || 'Unknown Gift' }}</h4>
         <p>x1</p>
       </div>
       <div class="status" :class="getStatusClass(pool.status)">
